@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Vendor: JoinFaces
+Implementation-Title: sistema-capacitaciones-tumi
+Implementation-Version: 1.0-SNAPSHOT
+Implementation-Vendor-Id: com.logicbig.example
+Build-Jdk: 1.7.0_79
+Built-By: diego
+Created-By: Maven Integration for Eclipse
+Implementation-URL: http://persapiens.org/sistema-capacitaciones-tumi
+
