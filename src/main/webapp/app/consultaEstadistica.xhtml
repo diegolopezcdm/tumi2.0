@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+			
+			<h3 class="hardblue TexAlCenter">Consulta Estadistica de Cursos</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					
+					 <h:panelGrid columns="2" cellpadding="5">
+            <p:outputLabel for="country" value="Area: " />
+            <p:selectOneMenu id="country" value="#{dropdownView.country}" style="width:150px">
+                <f:selectItem itemLabel="Selecione Area" itemValue="" noSelectionOption="true" />
+                
+            </p:selectOneMenu>
+ 
+            <p:outputLabel for="city" value="Cargo: " />
+            <p:selectOneMenu id="city" value="#{dropdownView.city}" style="width:150px">
+                <f:selectItem itemLabel="Selecione Cargo" itemValue="" noSelectionOption="true" />
+            </p:selectOneMenu>
+            
+            
+        	  <p:outputLabel for="popup" value="Fecha Inicio:" />
+        <p:calendar id="popup" value="#{calendarView.date2}" />
+        
+          <p:outputLabel for="popup2" value="Fecha Fin:" />
+        <p:calendar id="popup2" value="#{calendarView.date2}" />
+        
+        
+        </h:panelGrid>
+ 
+ 
+        <p:commandButton value="Buscar"  actionListener="#{dropdownView.displayLocation}" icon="ui-icon-check" />
+ 
+        <p:separator />
+ 
+
+
+				<div class="ContainerIndent">
+
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none">
+						
+						<p:growl id="growl" showDetail="true" />
+ 
+						    <h:panelGrid columns="2" columnClasses="left,right" style="width:100%">
+						         <p:chart type="bar" model="#{evaluacionBean.barModel}" style="width:800px;height:300px">
+            <p:ajax event="itemSelect" listener="#{evaluacionBean.barModel}" update="growl" />
+        </p:chart> 
+						    </h:panelGrid>
+
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				</div>
+			</p:panel>
+
+
+		</div>
+
+		
+       
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+			<p:panel header="Generar Capacitacion">
+
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none">
+						
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+			            
+			            <p:outputLabel for="codigo" value="Codigo: " />
+			            <p:inputText id="codigo" disabled="true" value="#{evaluacionBean.selectedEvaluacion.codigo}"/>
+			            
+			            <p:outputLabel for="tipo" value="Tipo Evaluacion: " />
+			            <p:inputText id="tipo" disabled="true" value="#{evaluacionBean.selectedEvaluacion.codigoTipo.nombre}"/>
+			            
+			            <p:outputLabel for="fechaRegistro" value="Fecha Registro: " />
+			            <p:inputText id="fechaRegistro" disabled="true" value="#{evaluacionBean.selectedEvaluacion.fechaRegistro}">
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </p:inputText>
+			            
+			            <p:outputLabel for="fechaResuelto" value="Fecha Resuelto: " />
+			            <p:inputText id="fechaResuelto" disabled="true" value="#{evaluacionBean.selectedEvaluacion.fechaModificacion}">
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </p:inputText>
+			           	
+			            <p:outputLabel for="fechaInicio" value="Fecha Inicio:" />
+			       		<p:calendar id="fechaInicio" disabled="true" pattern="yyyy-MM-dd" value="#{evaluacionBean.selectedEvaluacion.fechaInicio}"/>
+			        
+			          	<p:outputLabel for="fechaFin" value="Fecha Fin:" />
+			        	<p:calendar id="fechaFin" disabled="true" pattern="yyyy-MM-dd" value="#{evaluacionBean.selectedEvaluacion.fechaFin}"/>
+               			            		                       			
+            			<p:outputLabel for="motivo" value="Motivo: " />
+			            <p:inputText id="motivo" disabled="true" value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoSolicitudCapacitacion.motivo}"/>
+			            
+			            <p:outputLabel for="alcance" value="Alcance: " />
+			            <p:inputText id="alcance" disabled="true" value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoSolicitudCapacitacion.alcance}"/>
+			            
+			            <p:outputLabel for="comentario" value="Comentario: " />
+			            <p:inputTextarea id="comentario" disabled="true" value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoSolicitudCapacitacion.comentario}"/>
+			            
+        			</p:panelGrid>
+				
+						<h3>Porcentaje Aprobación de Evaluacion Inicial</h3>
+						
+						<p:dataTable var="curso" value="#{evaluacionBean.cursosTemario}" id="cursosTable" reflow="true">
+													    
+						    <p:column headerText="Curso">
+						        <h:outputText value="#{curso.nombre}" />
+						    </p:column>
+						    
+						    <p:column headerText="Tema">
+						    	<div class="datalist-noborder">
+							    <p:dataList var="tema" value="#{curso.tema}" type="ordered">
+							        <p:column>
+							            <h:outputText value="#{tema.nombre}"/>
+							        </p:column>
+							        
+							        <p:column headerText="Sub Temas">
+							        
+							        	<p:repeat value="#{tema.subtemas}" var="subtema">
+					       			 		<h:panelGrid columns="3" columnClasses="no-border, no-border, no-border">
+									                    <h:outputText value="#{subtema.nombre}"/>
+									                    <h:outputText value="#{subtema.nivel}"/>
+									                    <h:outputText value="#{subtema.porcentajeAprobacion}"/>
+					       			 		</h:panelGrid>
+					       			 	</p:repeat>
+									    
+									</p:column>						
+		
+							        
+							    </p:dataList>
+							    </div>
+							</p:column>
+						 
+						</p:dataTable>
+											
+
+						</p:panel>
+					</h:form>
+
+			</p:panel>
+
+	</ui:define>
+
+</ui:composition>

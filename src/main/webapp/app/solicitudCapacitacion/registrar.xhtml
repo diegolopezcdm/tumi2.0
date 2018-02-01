@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+		<h:form>
+ 
+    <p:panel header="Registrar Solicitud de Capacitación" style="margin-bottom:10px;">
+      					
+					<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+			            
+			            <p:outputLabel for="fechaRegistro" value="Fecha Registro: " />
+			            <p:inputText id="fechaRegistro" disabled="true" readonly="true" value="#{solicitudCapacitacionBean.solicitudcapacitacion.fechaRegistro}">
+			            	<f:convertDateTime pattern="yyyy-MM-dd"/>  
+						</p:inputText>
+			
+						<p:outputLabel for="area" value="Area: " />
+			            <p:selectOneMenu id="area" value="#{solicitudCapacitacionBean.areaCod}" style="width:150px">
+			                <p:ajax listener="#{solicitudCapacitacionBean.onAreaChange}" update="cargo" />
+			                <f:selectItem itemLabel="Seleccione Area" itemValue="" noSelectionOption="true" />
+			                <f:selectItems value="#{solicitudCapacitacionBean.areasList}" var="entry" itemValue="#{entry.codigo}" itemLabel="#{entry.nombre}" />
+			            </p:selectOneMenu>
+ 
+			            <p:outputLabel for="cargo" value="Cargo: " />
+			            <p:selectOneMenu id="cargo" value="#{solicitudCapacitacionBean.cargoCod}" style="width:150px">
+			                <p:ajax listener="#{solicitudCapacitacionBean.onCargoChange}" update="pickList" />
+			                <f:selectItem itemLabel="Selecione Cargo" itemValue="" noSelectionOption="true" />
+			                <f:selectItems value="#{solicitudCapacitacionBean.cargosList}" var="entry" itemValue="#{entry.codigo}" itemLabel="#{entry.nombre}" />
+			            </p:selectOneMenu>
+            
+			            <p:outputLabel for="pickList" value="Personal" />
+			            <p:pickList id="pickList" value="#{solicitudCapacitacionBean.personalList}" converter="empConverter" var="personal" itemLabel="#{personal.apellidoPaterno} #{personal.apellidoMaterno}, #{personal.nombre}" itemValue="#{personal}" required="true">
+							<p:ajax event="transfer" listener="#{solicitudCapacitacionBean.handleTransfer}" />
+			            </p:pickList>
+            			<p:outputLabel for="motivo" value="Motivo: " />
+			            <p:inputText id="motivo" value="#{solicitudCapacitacionBean.solicitudcapacitacion.motivo}" required="true"/>
+			            
+			            <p:outputLabel for="alcance" value="Alcance: " />
+			            <p:inputText id="alcance" value="#{solicitudCapacitacionBean.solicitudcapacitacion.alcance}"  required="true" />
+			            
+			            <p:outputLabel for="comentario" value="Comentario: " />
+			            <p:inputTextarea id="comentario" value="#{solicitudCapacitacionBean.solicitudcapacitacion.comentario}" />
+			            
+			            <p:outputLabel for="fechaInicio" value="Fecha Inicio:" /> 
+			       		<p:calendar id="fechaInicio" value="#{solicitudCapacitacionBean.solicitudcapacitacion.fechaInicio}" pattern="yyyy-MM-dd" mindate="today" binding="#{startDateComponent}"
+			       				showOn="button" readonlyInput="true" required="true" maxdate="#{solicitudCapacitacionBean.maxFechaInicio}">
+			       			<p:ajax event="dateSelect" update="fechaFin" />
+			        	</p:calendar>
+			        
+			          	<p:outputLabel for="fechaFin" value="Fecha Fin:" />
+			        	<p:calendar id="fechaFin" value="#{solicitudCapacitacionBean.solicitudcapacitacion.fechaFin}" pattern="yyyy-MM-dd" mindate="#{solicitudCapacitacionBean.solicitudcapacitacion.fechaInicio}" 
+			        			showOn="button" readonlyInput="true" redisabled="#{empty solicitudCapacitacionBean.solicitudcapacitacion.fechaInicio}" required="true">
+			        	</p:calendar>
+               
+        			</p:panelGrid>
+        			
+        			<p:panelGrid columns="1" columnClasses="ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	         			<p:commandButton value="Guardar"  actionListener="#{solicitudCapacitacionBean.guardar}" icon="ui-icon-check" update="msg"/>
+
+	         		</p:panelGrid>	
+       
+    </p:panel>
+</h:form>
+	</ui:define>
+	
+</ui:composition>

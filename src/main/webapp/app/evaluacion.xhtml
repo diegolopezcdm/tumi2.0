@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+			<p:panel header="Resolver Examen Inicial" style="margin-top:20px">
+			
+						<h:form id="formEvaluacion">	
+						
+						<c:if test="#{evaluacionBean.selectedEvaluacion==null}">	
+							<p:outputLabel value="Usted no tiene Evaluacion Inicial asignado" styleClass="text-label-left" />			
+						</c:if>
+							
+						<c:if test="#{evaluacionBean.selectedEvaluacion.codigoEstado.codigo==3}">	
+							
+							<p:panel style="border:none"  >
+								<p:commandButton id="btnIniciar" value="Iniciar"
+											icon="fa icon-ok-circled Fs14 white"
+											actionListener="#{evaluacionBean.goPreguntas}" />
+							</p:panel>
+							
+							<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	         
+									
+									<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.nombre} #{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.apellidoPaterno}" styleClass="text-label-right" />
+									
+									<p:outputLabel value="Cargo: " styleClass="text-label-left" />
+									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.codigoCargo.nombre}" styleClass="text-label-right" />
+																			
+									
+									<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-right" />
+									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.minutosDuracionFormarted} minutos" styleClass="text-label-left" />
+									
+									<p:outputLabel value="Indicaciones Generales " styleClass="text-label-left" />
+									<p:outputLabel value="El objetivo es evaluar el conocimiento de los cursos" styleClass="text-label-right" />
+																		
+									<p:outputLabel value="Cursos a evaluar: " styleClass="text-label-right" />
+									<p:dataTable var="curso" value="#{evaluacionBean.cursosTemario}" id="cursosTable" reflow="true">
+						    						    							    
+									    <p:column headerText="Curso">
+									        <h:outputText value="#{curso.nombre}" />
+									    </p:column>
+									   						    
+									    <p:column headerText="Tema">
+									    	<div class="datalist-noborder">
+										    <p:dataList var="tema" value="#{curso.tema}" type="ordered" >
+										        <p:column>
+										            <h:outputText value="#{tema.nombre}"/>
+										        </p:column>
+										        
+										        <p:column headerText="Sub Temas">
+										        
+										        	<p:repeat value="#{tema.subtemas}" var="subtema">
+								       			 		<h:panelGrid columns="2" columnClasses="no-border, no-border">
+												                    <h:outputText value="#{subtema.nombre}"/>
+								       			 		</h:panelGrid>
+								       			 	</p:repeat>
+												    
+												</p:column>						
+					
+										        
+										    </p:dataList>
+										    </div>
+										</p:column>
+						 
+									</p:dataTable>			
+									
+								</p:panelGrid>
+									
+							</c:if>
+
+					</h:form>
+			
+			</p:panel>
+
+	</ui:define>
+
+</ui:composition>

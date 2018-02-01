@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+			<p:panel header="Generar Capacitacion">
+
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none">
+						
+														
+						<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo==6 || evaluacionBean.personalCapacitacion.codigoEstado.codigo==5}">
+						
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+						
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+							<p:outputLabel value="#{evaluacionBean.personalCapacitacion.codigoPersonal.nombre}" styleClass="text-label-right" />
+								
+							<p:outputLabel value="Apellidos: " styleClass="text-label-left" />
+							<p:outputLabel value="#{evaluacionBean.personalCapacitacion.codigoPersonal.apellidoPaterno} #{evaluacionBean.personalCapacitacion.codigoPersonal.apellidoMaterno}" styleClass="text-label-right" />
+								
+							<p:outputLabel value="Nivel Personal: " styleClass="text-label-left" />
+							<p:outputLabel value="#{evaluacionBean.personalCapacitacion.codigoPersonal.codigoNivelPersonal.nombre}" styleClass="text-label-right" />
+							
+						</p:panelGrid>
+				
+						<h3>Porcentaje Aprobación de Evaluacion Inicial</h3>
+						
+						<p:dataTable var="curso" value="#{evaluacionBean.cursosTemario}" id="cursosTable" reflow="true">
+													    
+						    <p:column headerText="Curso">
+						        <h:outputText value="#{curso.nombre}" />
+						    </p:column>
+						    
+						    <p:column headerText="Tema">
+						    	<div class="datalist-noborder">
+							    <p:dataList var="tema" value="#{curso.tema}" type="ordered">
+							        <p:column>
+							            <h:outputText value="#{tema.nombre}"/>
+							        </p:column>
+							        
+							        <p:column headerText="Sub Temas">
+							        
+							        	<p:repeat value="#{tema.subtemas}" var="subtema">
+					       			 		<h:panelGrid columns="3" columnClasses="no-border, no-border, no-border">
+									                    <h:outputText value="#{subtema.nombre}"/>
+									                    <h:outputText value="#{subtema.nivel}"/>
+									                    <h:outputText value="#{subtema.porcentajeAprobacion}"/>
+					       			 		</h:panelGrid>
+					       			 	</p:repeat>
+									    
+									</p:column>						
+		
+							        
+							    </p:dataList>
+							    </div>
+							</p:column>
+						 
+						</p:dataTable>
+								
+								
+							
+							<h3> </h3>
+							
+							</c:if>
+							
+							<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo==6}">
+								<p:commandButton id="btnGenerar" value="Generar"
+									icon="fa icon-ok-circled Fs14 white" disabled="false"
+									actionListener="#{evaluacionBean.generarCapacitacion}" />
+							</c:if>
+							<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo!=6}">
+								<p:commandButton id="btnGenerar" value="Generar"
+									icon="fa icon-ok-circled Fs14 white" disabled="true"
+									actionListener="#{evaluacionBean.generarCapacitacion}" />
+							</c:if>
+							
+							
+						
+							<h3>Cursos generados a Capacitar</h3>
+							
+							<p:dataTable var="curso" value="#{evaluacionBean.cursosGeneradosCapacitacion}" id="cursosTable2" reflow="true">
+													    
+						    <p:column headerText="Curso">
+						        <h:outputText value="#{curso.nombre}" />
+						    </p:column>
+						    
+						    <p:column headerText="Tema">
+						    	<div class="datalist-noborder">
+							    <p:dataList var="tema" value="#{curso.tema}" type="ordered">
+							        <p:column>
+							            <h:outputText value="#{tema.nombre}"/>
+							        </p:column>
+							        
+							        <p:column headerText="Sub Temas">
+							        
+							        	<p:repeat value="#{tema.subtemas}" var="subtema">
+					       			 		<h:panelGrid columns="2" columnClasses="no-border, no-border">
+									                    <h:outputText value="#{subtema.nombre}"/>
+									                    <h:outputText value="#{subtema.nivel}"/>
+					       			 		</h:panelGrid>
+					       			 	</p:repeat>
+									    
+									</p:column>						
+		
+							        
+							    </p:dataList>
+							    </div>
+							</p:column>
+						 
+						</p:dataTable>
+								
+								
+
+						</p:panel>
+					</h:form>
+
+			</p:panel>
+
+	</ui:define>
+
+</ui:composition>

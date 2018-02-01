@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+			
+			
+			<p:panel header="Cursos" style="margin-top:20px" id="cursospanel">
+						
+					<h:form id="formEvaluacion">
+							
+							<p:treeTable value="#{capacitacionBean.capacitacionTree}" var="curso" selectionMode="single" selection="#{capacitacionBean.cursoSeleccionado}" style="margin-top:0">					        
+						        <p:column headerText="Nombre">
+						            <h:outputText value="#{curso.nombre}" />
+						        </p:column>
+						        <p:column headerText="Alcance" priority="2">
+						            <h:outputText value="#{curso.alcance}" />
+						        </p:column>
+						    </p:treeTable>
+						 
+						    <p:commandButton value="Ver" icon="ui-icon-newwin" disabled="#{curso.enable}"
+						                        actionListener="#{capacitacionBean.goVerContenido}"/>
+
+					</h:form>
+					    
+			</p:panel>
+	</ui:define>
+
+</ui:composition>

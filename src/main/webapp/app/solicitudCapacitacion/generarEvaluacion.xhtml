@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	
+	<script>
+		today = Date();
+	</script> 
+	
+	
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+			
+			<p:panel header="Generar Evaluación Inicial" style="margin-top:20px">
+				
+				<h:form id="formActualizar">
+					
+					<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+			            
+			            <p:outputLabel for="especialidad" value="Especialidad " />
+            			<p:selectOneMenu id="especialidad" value="#{solicitudCapacitacionBean.especialidadSelected}" style="width:150px" converter="especialidadConverter" required="true">
+            				<p:ajax listener="#{solicitudCapacitacionBean.onEspecialidadChange}" update="curso,tema,subtema" />
+                			<f:selectItem itemLabel="Selecione Especialidad" itemValue="" noSelectionOption="true" />
+                			<f:selectItems value="#{solicitudCapacitacionBean.especialidades}" var="entry" itemValue="#{entry}" itemLabel="#{entry.nombre}" />
+            			</p:selectOneMenu>
+            			
+            			<p:outputLabel for="curso" value="Curso " />
+            			<p:selectOneMenu id="curso" style="width:150px" value="#{solicitudCapacitacionBean.cursoSelected}" converter="cursoConverter" required="true">
+                			<p:ajax listener="#{solicitudCapacitacionBean.onCursoChange}" update="tema,subtema" />
+                			<f:selectItem itemLabel="Selecione Curso" itemValue="" noSelectionOption="true" />
+                			<f:selectItems value="#{solicitudCapacitacionBean.cursos}" var="entry" itemValue="#{entry}" itemLabel="#{entry.nombre}" />
+            			</p:selectOneMenu>	
+			            
+			            <p:outputLabel for="tema" value="Tema " />
+			            <p:selectManyMenu id="tema" value="#{solicitudCapacitacionBean.temasSelected}" 
+                         filter="true" filterMatchMode="contains" showCheckbox="true" converter="temaConverter" required="true">				           
+				           	<p:ajax listener="#{solicitudCapacitacionBean.onTemaChange}" update="subtema" />				           	
+                			<f:selectItems value="#{solicitudCapacitacionBean.temas}" var="entry" itemValue="#{entry}" itemLabel="#{entry.nombre}" />                           
+				        </p:selectManyMenu>
+				        
+				        <p:outputLabel for="subtema" value="Sub Tema " />
+			            <p:selectManyMenu id="subtema" value="#{solicitudCapacitacionBean.subtemasSelected}" 
+                          filter="true" filterMatchMode="contains" showCheckbox="true" converter="subtemaConverter" >
+                          
+                			<f:selectItems value="#{solicitudCapacitacionBean.subtemas}" var="entry" itemValue="#{entry}" itemLabel="#{entry.nombre}" />
+			           
+				        </p:selectManyMenu>
+				        
+				         <p:outputLabel for="nivel" value="Nivel " />
+            			<p:selectOneMenu id="nivel" value="#{solicitudCapacitacionBean.nivelSelected}" style="width:150px" required="true">
+            				
+                			<f:selectItem itemLabel="Selecione Nivel" itemValue="" noSelectionOption="true" />
+                			<f:selectItem itemLabel="Basico" itemValue="1" noSelectionOption="false" />
+                			<f:selectItem itemLabel="Intermedio" itemValue="2" noSelectionOption="false" />
+                			<f:selectItem itemLabel="Avanzado" itemValue="3" noSelectionOption="false" />
+                			
+            			</p:selectOneMenu>
+            						           
+        			</p:panelGrid>
+        			
+        			<p:panelGrid columns="1" columnClasses="ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	         			<p:commandButton value="Agregar"  actionListener="#{solicitudCapacitacionBean.agregarCurso}" icon="ui-icon-check" update="cursosTable"/>
+	         		</p:panelGrid>
+	         		
+	         		</h:form>
+	         	
+        				<p:separator />
+				        
+				        <p:outputLabel for="cursosTable" value="Cursos Seleccionados " />
+						<p:dataTable var="curso" value="#{solicitudCapacitacionBean.cursosView}" id="cursosTable" reflow="true">
+						    
+						    <p:column style="width:60px;">							    
+							    <p:commandLink icon="ui-icon-search" value="Eliminar"  action="#{solicitudCapacitacionBean.eliminarCurso}" update="cursosTable">
+							    	<f:setPropertyActionListener value="#{curso}" target="#{solicitudCapacitacionBean.cursoEliminar}" />
+							    </p:commandLink>
+							</p:column>
+							    
+						    <p:column headerText="Curso">
+						        <h:outputText value="#{curso.nombre}" />
+						    </p:column>
+						    
+						    <p:column headerText="Tema">
+						    	<div class="datalist-noborder">
+							    <p:dataList var="tema" value="#{curso.tema}" type="ordered">
+							        <p:column>
+							            <h:outputText value="#{tema.nombre}"/>
+							        </p:column>
+							        
+							        <p:column headerText="Sub Temas">
+							        
+							        	<p:repeat value="#{tema.subtemas}" var="subtema">
+					       			 		<h:panelGrid columns="2" columnClasses="no-border, no-border">
+									                    <h:outputText value="#{subtema.nombre}"/>
+									                    <h:outputText value="#{subtema.nivel}"/>
+					       			 		</h:panelGrid>
+					       			 	</p:repeat>
+									    
+									</p:column>						
+		
+							        
+							    </p:dataList>
+							    </div>
+							</p:column>
+						 
+						</p:dataTable>
+						<br></br>
+						
+						<h:form id="formActualizar2">
+						
+							<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+		         			
+			         			<p:outputLabel for="fechaInicio" value="Fecha Inicio Evaluación:" />
+					       		<p:calendar id="fechaInicio" value="#{solicitudCapacitacionBean.evaluacionFechaInicio}" pattern="yyyy-MM-dd" 
+					       				showOn="button" disabled="true">
+					        	</p:calendar>
+								
+								<p:outputLabel for="fechaFin" value="Fecha Fin Evaluación:" />
+					       		<p:calendar id="fechaFin" value="#{solicitudCapacitacionBean.evaluacionFechaFin}" pattern="yyyy-MM-dd" mindate="#{solicitudCapacitacionBean.evaluacionFechaInicio}"
+					       				maxdate="#{solicitudCapacitacionBean.solicitudcapacitacion.fechaFin}" showOn="button" readonlyInput="true" required="true">
+					        	</p:calendar>
+				        	
+		         			</p:panelGrid>
+						
+		        			<p:panelGrid columns="1" columnClasses="ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+			         			<p:commandButton value="Generar"  actionListener="#{solicitudCapacitacionBean.guardarCursos}" icon="ui-icon-check" update="msg"/>
+			         		</p:panelGrid>
+						        				
+       					</h:form>
+       					
+       					<p:panel header="Rechazar Evaluación Inicial" style="margin-top:20px">
+       						<h:form id="formActualizar3">
+       							<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+       								<p:outputLabel for="comentario" value="Comentario:" />
+       								<p:inputTextarea id="comentario" value="#{solicitudCapacitacionBean.comentarioRechazo}" required="true"/>
+       								<p:commandButton value="Rechazar"  actionListener="#{solicitudCapacitacionBean.rechazar}" icon="ui-icon-close" update="msg"/>
+       							</p:panelGrid>
+       						</h:form>
+       					</p:panel>
+       				
+			</p:panel>
+
+	</ui:define>
+
+</ui:composition>

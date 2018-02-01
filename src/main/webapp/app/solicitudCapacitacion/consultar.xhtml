@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+			
+		<p:panel header="Consultar Solicitud de Capacitación" style="margin-top:20px">
+			
+			<h:form id="formConsultar">
+			
+			 <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	            
+	            <p:outputLabel for="codigo" value="Codigo: " />
+	            <p:inputText id="codigo" value="#{solicitudCapacitacionBean.codigo}" onkeypress="if(event.which &lt; 48 || event.which &gt; 57) return false;"/>
+	       
+	        	<p:outputLabel for="fechaRegistro" value="Fecha Registro:" />
+	        	<p:calendar id="fechaRegistro" value="#{solicitudCapacitacionBean.fechaRegistro}" pattern="yyyy-MM-dd" showOn="button" readonlyInput="true">
+	        		<p:ajax event="dateSelect" update="fechaInicio" />
+	        	</p:calendar>
+	        	
+	        	<p:outputLabel for="fechaInicio" value="Fecha Inicio:" />
+	       		<p:calendar id="fechaInicio" value="#{solicitudCapacitacionBean.fechaInicio}" pattern="yyyy-MM-dd" showOn="button" readonlyInput="true"
+	       			mindate="#{solicitudCapacitacionBean.fechaRegistro}" redisabled="#{empty solicitudCapacitacionBean.fechaRegistro}">
+	       			<p:ajax event="dateSelect" update="fechaFin" />
+	       		</p:calendar>
+	        
+	          	<p:outputLabel for="fechaFin" value="Fecha Fin:" />
+	        	<p:calendar id="fechaFin" value="#{solicitudCapacitacionBean.fechaFin}" pattern="yyyy-MM-dd" showOn="button" readonlyInput="true"
+	        		mindate="#{solicitudCapacitacionBean.fechaInicio}" redisabled="#{empty solicitudCapacitacionBean.fechaInicio}">
+	        	</p:calendar>
+	        	
+	        	
+      				<p:outputLabel for="estado" value="Estado: " />
+          			<p:selectOneMenu id="estado" style="width:150px" value="#{solicitudCapacitacionBean.estado}">
+              			<f:selectItem itemLabel="Selecione Estado" itemValue="" noSelectionOption="true" />
+              			<f:selectItem itemLabel="Registrado" itemValue="3" noSelectionOption="true" />
+              			<f:selectItem itemLabel="Aprobado" itemValue="1" />
+              			<f:selectItem itemLabel="Desaprobado" itemValue="2" />
+          			</p:selectOneMenu>	
+       
+     			</p:panelGrid>
+
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	         		<p:commandButton value="Buscar"  actionListener="#{solicitudCapacitacionBean.buscar}" icon="ui-icon-check" />
+					<p:commandButton value="Limpiar"  actionListener="#{dropdownView.displayLocation}" icon="ui-icon-cancel" />
+	         	</p:panelGrid>
+      			
+			</h:form>
+      		<p:separator />
+
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none" >
+							<p:outputLabel id="text" value="Resultado de Busqueda: " />
+							
+							<p:dataTable id="checkboxDT" var="solicitud" value="#{solicitudCapacitacionBean.solicitudes}" rowKey="#{solicitud.id}" style="margin-bottom:0" reflow="true">
+						        
+						        <p:column headerText="Codigo">
+						            <h:outputText value="#{solicitud.codigo}" />
+						        </p:column>
+						      
+						       <p:column headerText="Fecha Registro">
+						      		<h:outputText value="#{solicitud.fechaRegistro}">
+						      			<f:convertDateTime pattern="yyyy-MM-dd"/> 
+						      		</h:outputText>
+							    </p:column>
+							 
+							    <p:column headerText="Fecha Inicio">
+							   	 <h:outputText value="#{solicitud.fechaInicio}">
+							   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+							   	 </h:outputText>
+							    </p:column>
+							 
+							    <p:column headerText="Fecha Fin">
+							    	<h:outputText value="#{solicitud.fechaFin}" >
+							   	 		<f:convertDateTime pattern="yyyy-MM-dd"/> 
+							   	 	</h:outputText>
+							    </p:column>
+							    
+							    <p:column headerText="Estado">
+							    	<h:outputText value="#{solicitud.codigoEstado.nombre}" />
+							    </p:column>
+							    
+							    <p:column headerText="Alcance">
+							    	<h:outputText value="#{solicitud.alcance}" />
+							    </p:column>
+							    
+							    <p:column headerText="Motivo">
+							    	<h:outputText value="#{solicitud.motivo}" />
+							    </p:column>
+							    
+							    <p:column headerText="Opciones">
+							    
+							    	<p:commandLink icon="ui-icon-search" value="Detalle"  action="#{solicitudCapacitacionBean.irDetalle}">
+							    		<f:setPropertyActionListener value="#{solicitud}" target="#{solicitudCapacitacionBean.selectedSolicitud}" />
+							    	</p:commandLink>
+							    	<br></br>
+							    				
+							        <p:commandLink value="Modificar"  action="#{solicitudCapacitacionBean.irActualizar}" 
+							        		rendered="#{solicitud.codigoEstado.codigo==3}">
+					    				<f:setPropertyActionListener value="#{solicitud}" target="#{solicitudCapacitacionBean.selectedSolicitud}" />
+					    			</p:commandLink>
+					    			
+							        <p:commandLink value="Actualizar"  action="#{solicitudCapacitacionBean.irActualizar}" disabled="true" 
+							        		rendered="#{solicitud.codigoEstado.codigo!=3}">
+					    				<f:setPropertyActionListener value="#{solicitud}" target="#{solicitudCapacitacionBean.selectedSolicitud}" />
+					    			</p:commandLink>							  		
+        
+							    </p:column>
+							    
+						    </p:dataTable>
+
+						</p:panel>
+					</h:form>
+					
+					
+ 					<div style="text-align:center;border:none">
+ 					<h:form>
+							<p:commandButton id="btnNuevo" value="Nuevo"
+									icon="fa icon-ok-circled Fs14 white"  action="#{solicitudCapacitacionBean.irRegistrar}"/>
+					</h:form>
+					</div>
+					
+
+		</p:panel>
+	</ui:define>
+
+</ui:composition>

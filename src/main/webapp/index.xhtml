@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head></h:head>
+<h:body style="margin-left:30px">
+    <h3>PrimeFaces SelectOneMenu With Ajax Example</h3>
+
+   <h:form>
+    <p:growl id="msgs" showDetail="true" />
+ 
+    <p:panel header="Select a Location" style="margin-bottom:10px;">
+        <h:panelGrid columns="2" cellpadding="5">
+            <p:outputLabel for="country" value="Country: " />
+            <p:selectOneMenu id="country" value="#{itemsBean.country}" style="width:150px">
+                <p:ajax listener="#{itemsBean.onCountryChange}" update="city" />
+                <f:selectItem itemLabel="Select Country" itemValue="" noSelectionOption="true" />
+                <f:selectItems value="#{itemsBean.countries}" />
+            </p:selectOneMenu>
+ 
+            <p:outputLabel for="city" value="City: " />
+            <p:selectOneMenu id="city" value="#{itemsBean.city}" style="width:150px">
+                <f:selectItem itemLabel="Select City" itemValue="" noSelectionOption="true" />
+                <f:selectItems value="#{itemsBean.cities}" />
+            </p:selectOneMenu>
+        </h:panelGrid>
+ 
+        <p:separator />
+ 
+        <p:commandButton value="Submit" update="msgs" actionListener="#{itemsBean.displayLocation}" icon="ui-icon-check" />
+    </p:panel>
+</h:form>
+    <br/>
+
+</h:body>
+</html>

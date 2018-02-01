@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+			
+			
+
+			<p:panel header="Evaluación de Capacitación" style="margin-top:20px">
+						
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none">
+							
+							<p:dataTable id="checkboxDT" var="personalcapacitacion" value="#{evaluacionBean.personalCapacitaciones}" rowKey="#{personalcapacitacion.id}" style="margin-bottom:0" reflow="true">
+														     
+							    <p:column headerText="Alcance">
+							    	<h:outputText value="#{personalcapacitacion.codigoSolicitudCapacitacion.alcance}" />
+							    </p:column>
+							    
+							    <p:column headerText="Motivo">
+							    	<h:outputText value="#{personalcapacitacion.codigoSolicitudCapacitacion.motivo}" />
+							    </p:column>
+							    
+							    <p:column headerText="Comentario">
+							    	<h:outputText value="#{personalcapacitacion.codigoSolicitudCapacitacion.comentario}" />
+							    </p:column>
+							    
+							    <p:column headerText="Fecha Inicio">
+						      		<h:outputText value="#{personalcapacitacion.codigoSolicitudCapacitacion.fechaInicio}" >
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </h:outputText>
+							    </p:column>
+							    
+							    <p:column headerText="Fecha Fin">
+							    	<h:outputText value="#{personalcapacitacion.codigoSolicitudCapacitacion.fechaFin}" >
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </h:outputText>
+							    </p:column>
+							    
+							    <p:column headerText="Opciones" >
+							    
+							    	<p:commandLink value="Resolver Evaluación"  action="#{evaluacionBean.generarEvaluacionCapacitacion}">
+							    		<f:setPropertyActionListener value="#{personalcapacitacion}" target="#{evaluacionBean.personalCapacitacionSelected}" />
+							    	</p:commandLink>
+        
+							    </p:column>
+							    
+						    </p:dataTable>
+
+						</p:panel>
+					</h:form>
+					
+			</p:panel>       
+
+	</ui:define>
+
+</ui:composition>

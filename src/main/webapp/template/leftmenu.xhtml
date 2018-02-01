@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:outputStylesheet library="css" name="main.css" />
+
+			<h:form id="menuform">
+				<p:panelMenu 	>
+				     <p:submenu label="Menu Principal" >
+				        <p:menuitem value="Resolver Examen Inicial" icon="fa-paper-plane" action="#{evaluacionBean.goExamenesRegistrados}"/>
+				        <p:menuitem value="Generar Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goExamenesResueltos}"/>
+				    	<p:menuitem value="Consultar Resultado de Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goConsultarResueltos}"/>
+				    	<p:menuitem value="Ver Cursos de Capacitación" icon="fa-paper-plane" action="#{capacitacionBean.goVerCapacitaciones}"/>
+				    	<p:menuitem value="Evaluación de Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goEvaluacionesRegistrados}"/>
+				     </p:submenu>
+				     <p:separator />
+				     <p:submenu label="Ayuda" >
+				         <p:menuitem value="Contactanos" url="http://www.primefaces.org" icon="ui-icon-home" />
+				         <p:menuitem value="Acerca de Tumi" url="http://www.primefaces.org/documentation" icon="ui-icon-document" />
+				             
+				     </p:submenu>
+				</p:panelMenu>
+			</h:form>
+			
+			
+		
+
+</ui:composition>
