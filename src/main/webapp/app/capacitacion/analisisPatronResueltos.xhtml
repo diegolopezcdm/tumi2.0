@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+			
+			
+
+			<p:panel header="Consultar Evaluaciones Resueltas" style="margin-top:20px">
+			
+			<h:form id="formConsultar">
+			
+				 <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+		        	
+	     			<p:outputLabel for="fechaResueltoDesde" value="Fecha Resuelto Desde:" />
+			       		<p:calendar id="fechaResueltoDesde" value="#{evaluacionBean.fechaResueltoDesde}" pattern="yyyy-MM-dd"
+			       				required="true" showOn="button" readonlyInput="true">
+		       			<p:ajax event="dateSelect" update="fechaResueltoHasta" />
+		        	</p:calendar>
+		        
+		          	<p:outputLabel for="fechaResueltoHasta" value="Fecha Resuelto Hasta:" />
+		        	<p:calendar id="fechaResueltoHasta" value="#{evaluacionBean.fechaResueltoHasta}" pattern="yyyy-MM-dd" mindate="#{evaluacionBean.fechaResueltoDesde}" 
+		        			required="true" showOn="button" readonlyInput="true" redisabled="#{empty solicitudCapacitacionBean.solicitudcapacitacion.fechaInicio}">
+		        		
+   					</p:calendar>
+	     		
+	     		</p:panelGrid>
+
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid" styleClass="ui-panelgrid-blank">
+	         		<p:commandButton value="Buscar"  actionListener="#{evaluacionBean.filtrarResueltoPorFechas}" icon="ui-icon-check" update="msg"/>
+					<p:commandButton value="Limpiar"  actionListener="#{dropdownView.displayLocation}" icon="ui-icon-cancel" />
+	         	</p:panelGrid>
+      			
+			</h:form>
+      		<p:separator />
+						
+					<h:form id="formEvaluacion">
+						<p:panel style="border:none">
+							
+							<p:dataTable id="checkboxDT" var="evaluacion" value="#{capacitacionBean.evaluacionesResueltas}" rowKey="#{evaluacion.id}" style="margin-bottom:0" reflow="true">
+						       
+						       <p:column headerText="Personal">
+						      		<h:outputText value="#{evaluacion.codigoPersonalCapacitacion.codigoPersonal.nombre} 
+						      		#{evaluacion.codigoPersonalCapacitacion.codigoPersonal.apellidoPaterno }
+						      		#{evaluacion.codigoPersonalCapacitacion.codigoPersonal.apellidoMaterno}"/>
+							    </p:column>
+						       
+						       <p:column headerText="Fecha Resuelto">
+						      		<h:outputText value="#{evaluacion.fechaModificacion}" >
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </h:outputText>
+							    </p:column>
+							   							    
+							    <p:column headerText="Opciones">
+							    
+							    	<p:commandLink icon="ui-icon-search" value="Analizar"  action="#{capacitacionBean.goPatronDetalle}">
+							    		<f:setPropertyActionListener value="#{evaluacion}" target="#{capacitacionBean.selectedEvaluacionResuelta}" />
+							    	</p:commandLink>						  		
+        
+							    </p:column>
+							    
+						    </p:dataTable>
+
+						</p:panel>
+					</h:form>
+					
+			</p:panel>       
+
+	</ui:define>
+
+</ui:composition>

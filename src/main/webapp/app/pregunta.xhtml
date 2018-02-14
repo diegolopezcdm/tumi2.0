@@ -29,6 +29,7 @@
 						<p:panel style="border:none"  >
 								 
 							<p:selectOneRadio id="alternativaUnica" layout="responsive" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
+								<p:ajax listener="#{evaluacionBean.actualizarPatronDesarrollo}" />
 								<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
 									<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
 								</c:forEach>

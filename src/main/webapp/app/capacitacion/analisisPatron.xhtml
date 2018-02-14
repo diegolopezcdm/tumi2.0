@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<p:panel header="Detalle de Patron de Desarrollo"
+			style="margin-top:20px">
+					    
+		    <p:fieldset legend="Orden de Desarrollo de Preguntas" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		            <h:form>
+		        	<p:dataTable var="preguntaView" value="#{capacitacionBean.ordenPreguntas}" widgetVar="preguntasTable" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+ 
+						<p:column filterBy="#{preguntaView.curso}" headerText="Curso" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.curso}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.tema}" headerText="Tema" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.tema}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.subtema}" headerText="Subtema" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.subtema}" />
+				        </p:column>
+				        
+ 						<p:column filterBy="#{preguntaView.pregunta}" headerText="Pregunta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.pregunta}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.orden}" headerText="Orden" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.orden}" />
+				        </p:column>
+ 					</p:dataTable>
+		            </h:form>
+		        </h:panelGrid>
+    		</p:fieldset>
+    		
+    		<p:fieldset legend="Intentos de Preguntas" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		            <h:form>
+		        	<p:dataTable var="preguntaView" value="#{capacitacionBean.intentoPreguntas}" widgetVar="preguntasTable" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+ 
+						<p:column filterBy="#{preguntaView.curso}" headerText="Curso" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.curso}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.tema}" headerText="Tema" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.tema}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.subtema}" headerText="Subtema" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.subtema}" />
+				        </p:column>
+				        
+ 						<p:column filterBy="#{preguntaView.pregunta}" headerText="Pregunta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.pregunta}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.esCorrecto}" headerText="Respuesta Correcta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.esCorrecto}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.intento}" headerText="Intentos" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.intento}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.resultadoIntento}" headerText="Intento Respuesta Correcta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.resultadoIntento}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.tipoPregunta}" headerText="Tipo Pregunta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.tipoPregunta}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.numeroRespuestaCorrecta}" headerText="Numero Respuesta Correcta" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.numeroRespuestaCorrecta}" />
+				        </p:column>
+				        
+ 					</p:dataTable>
+		            </h:form>
+		        </h:panelGrid>
+    		</p:fieldset>
+    		
+    		<p:fieldset legend="Dificultad Cursos" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		        	<p:outputLabel value="Cursos Aprobados: " />
+		        	<p:dataTable var="subtema" value="#{capacitacionBean.distribucionSubtemasAprobados}" emptyMessage="No hay cursos aprobados">
+					    <p:column headerText="Curso">
+					        <h:outputText value="#{subtema.curso}" />
+					    </p:column>
+					    
+					     <p:column headerText="Tema">
+					        <h:outputText value="#{subtema.tema}" />
+					    </p:column>
+					    
+					     <p:column headerText="Subtema">
+					        <h:outputText value="#{subtema.subtema}" />
+					    </p:column>
+					    
+					    <p:column headerText="% Aprobación">
+					        <h:outputText value="#{subtema.porcentaje}" />
+					    </p:column>
+					    
+					</p:dataTable>
+
+		        	<p:outputLabel value="Cursos Desaprobados: " />
+		        	<p:dataTable var="subtema" value="#{capacitacionBean.distribucionSubtemasDesaprobados}" emptyMessage="No hay cursos desaprobados">
+					    <p:column headerText="Curso">
+					        <h:outputText value="#{subtema.curso}" />
+					    </p:column>
+					    
+					     <p:column headerText="Tema">
+					        <h:outputText value="#{subtema.tema}" />
+					    </p:column>
+					    
+					     <p:column headerText="Subtema">
+					        <h:outputText value="#{subtema.subtema}" />
+					    </p:column>
+					    
+					    <p:column headerText="% Aprobación">
+					        <h:outputText value="#{subtema.porcentaje}" />
+					    </p:column>
+					    
+					</p:dataTable>
+		        </h:panelGrid>
+    		</p:fieldset>
+
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>

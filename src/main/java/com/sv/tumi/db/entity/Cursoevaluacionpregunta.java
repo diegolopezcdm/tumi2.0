@@ -9,10 +9,12 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,7 +65,7 @@ public class Cursoevaluacionpregunta implements Serializable {
     private Pregunta codigoPregunta;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoCursoEvaluacionPregunta")
     private List<Cursoevaluacionpreguntarespuesta> cursoevaluacionpreguntarespuestaList;
-    @OneToMany(mappedBy = "codigoCursoEvaluacionPregunta")
+    @OneToMany(mappedBy = "codigoCursoEvaluacionPregunta", fetch = FetchType.LAZY)
     private List<Tiempodesarrollo> tiempodesarrolloList;
     @OneToMany(mappedBy = "codigoCursoEvaluacionPregunta")
     private List<Patrondesarrollo> patrondesarrolloList;

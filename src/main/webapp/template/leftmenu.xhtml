@@ -3,28 +3,61 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ps="http://primefaces.org/sentinel"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
-<h:outputStylesheet library="css" name="main.css" />
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-			<h:form id="menuform">
-				<p:panelMenu 	>
-				     <p:submenu label="Menu Principal" >
-				        <p:menuitem value="Resolver Examen Inicial" icon="fa-paper-plane" action="#{evaluacionBean.goExamenesRegistrados}"/>
-				        <p:menuitem value="Generar Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goExamenesResueltos}"/>
-				    	<p:menuitem value="Consultar Resultado de Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goConsultarResueltos}"/>
-				    	<p:menuitem value="Ver Cursos de Capacitación" icon="fa-paper-plane" action="#{capacitacionBean.goVerCapacitaciones}"/>
-				    	<p:menuitem value="Evaluación de Capacitación" icon="fa-paper-plane" action="#{evaluacionBean.goEvaluacionesRegistrados}"/>
-				     </p:submenu>
-				     <p:separator />
-				     <p:submenu label="Ayuda" >
-				         <p:menuitem value="Contactanos" url="http://www.primefaces.org" icon="ui-icon-home" />
-				         <p:menuitem value="Acerca de Tumi" url="http://www.primefaces.org/documentation" icon="ui-icon-document" />
-				             
-				     </p:submenu>
-				</p:panelMenu>
-			</h:form>
-			
-			
-		
+	<h:outputStylesheet library="css" name="main.css" />
+
+	<h:form id="menuform">
+		<p:panelMenu>
+			<p:submenu label="Menu Principal">
+
+
+				<c:choose>
+					<c:when
+						test="${personalLogeado.tipoPerfil.equals('personalacapacitar')}">
+						<p:menuitem value="Resolver Examen Inicial" icon="fa-paper-plane"
+							action="#{evaluacionBean.goExamenesRegistrados}" />
+						<p:menuitem value="Generar Capacitación" icon="fa-paper-plane"
+							action="#{evaluacionBean.goExamenesResueltos}" />
+						<p:menuitem value="Consultar Resultado de Capacitación"
+							icon="fa-paper-plane"
+							action="#{evaluacionBean.goConsultarResueltos}" />
+						<p:menuitem value="Ver Cursos de Capacitación"
+							icon="fa-paper-plane"
+							action="#{capacitacionBean.goVerCapacitaciones}" />
+						<p:menuitem value="Evaluación de Capacitación"
+							icon="fa-paper-plane"
+							action="#{evaluacionBean.goEvaluacionesRegistrados}" />
+					</c:when>
+					<c:when test="${personalLogeado.tipoPerfil.equals('jeferrhh')}">
+						<p:menuitem value="Generar Evaluación Inicial"
+							icon="fa-paper-plane" />
+					</c:when>
+					<c:when
+						test="${personalLogeado.tipoPerfil.equals('analistadecapacitacion')}">
+						<p:menuitem value="Actualizar Solicitud de Capacitación"
+							icon="fa-paper-plane" />
+						<p:menuitem value="Analizar Tiempo de Solución de Evaluación"
+							icon="fa-paper-plane"
+							action="#{capacitacionBean.goAnalizarTiempo}" />
+						<p:menuitem value="Analizar Patron de Solución de Evaluación"
+							icon="fa-paper-plane"
+							action="#{capacitacionBean.goAnalizarPatron}" />
+					</c:when>
+				</c:choose>
+
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="Ayuda">
+				<p:menuitem value="Contactanos" url="http://www.primefaces.org"
+					icon="ui-icon-home" />
+				<p:menuitem value="Acerca de Tumi"
+					url="http://www.primefaces.org/documentation"
+					icon="ui-icon-document" />
+
+			</p:submenu>
+		</p:panelMenu>
+	</h:form>
 
 </ui:composition>

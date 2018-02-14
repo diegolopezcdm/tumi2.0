@@ -70,7 +70,12 @@ public class Pregunta implements Serializable {
     private Tipopregunta codigoTipoPregunta;
     @OneToMany(mappedBy = "codigoPregunta")
     private List<Respuesta> respuestaList;
-
+    
+    @Column(name = "minutosMinimo")
+    private Integer minutosMinimo;
+    @Column(name = "minutosMaximo")
+    private Integer minutosMaximo;
+    
     public Pregunta() {
     }
 
@@ -166,7 +171,23 @@ public class Pregunta implements Serializable {
         this.respuestaList = respuestaList;
     }
 
-    @Override
+    public Integer getMinutosMinimo() {
+		return minutosMinimo;
+	}
+
+	public void setMinutosMinimo(Integer minutosMinimo) {
+		this.minutosMinimo = minutosMinimo;
+	}
+
+	public Integer getMinutosMaximo() {
+		return minutosMaximo;
+	}
+
+	public void setMinutosMaximo(Integer minutosMaximo) {
+		this.minutosMaximo = minutosMaximo;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

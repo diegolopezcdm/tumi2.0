@@ -36,6 +36,7 @@ import com.sv.tumi.db.dao.EstadoDAO;
 import com.sv.tumi.db.dao.EvaluacionDAO;
 import com.sv.tumi.db.dao.NivelDAO;
 import com.sv.tumi.db.dao.ParametroGeneracionCapacitacionDAO;
+import com.sv.tumi.db.dao.PatronDesarrolloDAO;
 import com.sv.tumi.db.dao.PersonalCapacitacionDAO;
 import com.sv.tumi.db.dao.PreguntasDAO;
 import com.sv.tumi.db.dao.RespuestaDAO;
@@ -43,6 +44,7 @@ import com.sv.tumi.db.dao.ResultadoEvaluacionDAO;
 import com.sv.tumi.db.dao.SolicitudCapacitacionDAO;
 import com.sv.tumi.db.dao.SubtemaDAO;
 import com.sv.tumi.db.dao.TemaDAO;
+import com.sv.tumi.db.dao.TiempoDesarrolloDAO;
 import com.sv.tumi.db.dao.TipoevaluacionDAO;
 import com.sv.tumi.db.entity.Curso;
 import com.sv.tumi.db.entity.Cursocapacitacion;
@@ -53,12 +55,12 @@ import com.sv.tumi.db.entity.Cursonivel;
 import com.sv.tumi.db.entity.Estado;
 import com.sv.tumi.db.entity.Evaluacion;
 import com.sv.tumi.db.entity.Nivel;
+import com.sv.tumi.db.entity.Patrondesarrollo;
 import com.sv.tumi.db.entity.Personal;
 import com.sv.tumi.db.entity.PersonalCapacitacion;
 import com.sv.tumi.db.entity.Pregunta;
 import com.sv.tumi.db.entity.Respuesta;
 import com.sv.tumi.db.entity.Resultadoevaluacion;
-import com.sv.tumi.db.entity.Solicitudcapacitacion;
 import com.sv.tumi.db.entity.Subtema;
 import com.sv.tumi.db.entity.Tema;
 import com.sv.tumi.db.entity.Tiempodesarrollo;
@@ -85,6 +87,7 @@ public class EvaluacionBean implements Serializable {
 	private Integer preguntaIndex = 0;
 	private Boolean showfinalizar = false;
 	private int number = 10000;
+	private int resueltoIndice;
 
 	List<Cursoevaluacion> cursoEvaluacionList = new ArrayList<Cursoevaluacion>();
 	List<Cursocapacitacion> cursoCapacitacion = new ArrayList<Cursocapacitacion>();
@@ -100,10 +103,13 @@ public class EvaluacionBean implements Serializable {
 	private Date fechaResueltoHasta;
 	List<PersonalCapacitacion> personalCapacitaciones;
 	PersonalCapacitacion personalCapacitacionSelected;
+	private Integer inicioPregunta;
 
 	private String selectedItem;
 	private List<String> selectedItems = new ArrayList();
 
+	PatronDesarrolloDAO patronDesarrolloDAO = new PatronDesarrolloDAO();
+	TiempoDesarrolloDAO tiempoDesarrolloDAO = new TiempoDesarrolloDAO();
 	CursoevaluacionpreguntaDAO cursoevaluacionpreguntaDAO = new CursoevaluacionpreguntaDAO();
 	CursoEvaluacionDAO cursoEvaluacionDAO = new CursoEvaluacionDAO();
 	TipoevaluacionDAO tipoevaluacionDAO = new TipoevaluacionDAO();
@@ -180,11 +186,21 @@ public class EvaluacionBean implements Serializable {
 
 	public void cargaEvaluacion() {
 		// selectedEvaluacion.setFechaInicio(new Date());
+
+		showfinalizar = false;// reset value
+		pregunta = null;// reset value
+		preguntasEvaluacion = new ArrayList<Cursoevaluacionpregunta>();// reset
+																		// value
+		preguntaIndex = 0;// reset value
+		cursoevaluacionpreguntarespuestas = new ArrayList<Cursoevaluacionpreguntarespuesta>();// reset
+																								// value
+		resueltoIndice = 1;
 		number = selectedEvaluacion.getMinutosDuracion();
 
 		filter.clear();
 		filter.put("codigoEvaluacion.codigo", selectedEvaluacion.getCodigo());
-		cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
+		// cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
+		cursoEvaluacionList = selectedEvaluacion.getCursoevaluacionList();
 
 		filter.clear();
 		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
@@ -198,6 +214,7 @@ public class EvaluacionBean implements Serializable {
 				preguntasEvaluacion.add(preguntasCurso);
 			}
 
+			cursoevaluacion.setCursoevaluacionpreguntaList(preguntasCursos);
 		}
 
 		cursosTemario = new ArrayList<CursoView>();
@@ -217,6 +234,14 @@ public class EvaluacionBean implements Serializable {
 
 		pregunta = preguntasEvaluacion.get(getPreguntaIndex())
 				.getCodigoPregunta();
+		
+		if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
+			inicioPregunta = number;
+			preguntasEvaluacion.get(getPreguntaIndex())
+					.setPatrondesarrolloList(new ArrayList<Patrondesarrollo>());
+
+		}
+		
 		setPreguntaIndex(getPreguntaIndex() + 1);
 
 		filter.clear();
@@ -253,11 +278,42 @@ public class EvaluacionBean implements Serializable {
 				preguntasEvaluacion.get(getPreguntaIndex() - 1)
 						.setPuntajeObtenido(0.0);
 			}
+
+			if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
+
+				List<Tiempodesarrollo> tiempos = new ArrayList<Tiempodesarrollo>();
+				Tiempodesarrollo tiempoDesarrollo = new Tiempodesarrollo();
+				tiempoDesarrollo
+						.setCodigoCursoEvaluacionPregunta(preguntasEvaluacion
+								.get(getPreguntaIndex() - 1));
+				tiempoDesarrollo.setUsuarioRegistro("admin");
+
+				try {
+					Date todayWithZeroTime = formatter.parse(formatter
+							.format(new Date()));
+
+					tiempoDesarrollo.setFechaRegistro(todayWithZeroTime);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				tiempoDesarrollo.setSegundosTiempoPregunta(inicioPregunta
+						- number);
+				System.out.println("segundos pasado : =======> "
+						+ (inicioPregunta - number));
+				tiempos.add(tiempoDesarrollo);
+
+				preguntasEvaluacion.get(getPreguntaIndex() - 1)
+						.setTiempodesarrolloList(tiempos);
+
+			}
+
 		}
+
 	}
 
 	public void finalizarEvaluacion() throws IOException {
-		showfinalizar = false;// reset value
+
 		agregarPregunta();
 
 		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
@@ -283,6 +339,20 @@ public class EvaluacionBean implements Serializable {
 							+ cursoevaluacionpregunta.getPuntajeObtenido();
 				}
 				cursoevaluacionpreguntaDAO.edit(cursoevaluacionpregunta);
+
+				if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
+					for (Tiempodesarrollo tiempodesarrollo : cursoevaluacionpregunta
+							.getTiempodesarrolloList()) {
+						tiempoDesarrolloDAO.create(tiempodesarrollo);
+					}
+
+					for (Patrondesarrollo patrondesarrollo : cursoevaluacionpregunta
+							.getPatrondesarrolloList()) {
+						patronDesarrolloDAO.create(patrondesarrollo);
+					}
+
+				}
+
 			}
 
 			System.out.println(puntajeObtenido);
@@ -341,11 +411,14 @@ public class EvaluacionBean implements Serializable {
 					.redirect("evaluacionFinal.xhtml");
 		} else if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {// evaluacion
 																						// capacitacion
-			Estado terminado = estadoDAO.find(7);//terminado
+			Estado terminado = estadoDAO.find(7);// terminado
 			actualizarEstadodePersonalCapacitacion(terminado);
-			
-			FacesContext.getCurrentInstance().getExternalContext()
-					.redirect("/sistema-capacitaciones-tumi/app/capacitacion/final.xhtml");
+
+			FacesContext
+					.getCurrentInstance()
+					.getExternalContext()
+					.redirect(
+							"/sistema-capacitaciones-tumi/app/capacitacion/final.xhtml");
 		}
 
 	}
@@ -580,8 +653,11 @@ public class EvaluacionBean implements Serializable {
 		filter.clear();
 		filter.put("codigoEstado.codigo", 4);// evaluacion resuelto
 		evaluacionesRegistradas = evaluacionDAO.findByProperty(filter);
-		FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/sistema-capacitaciones-tumi/app/evaluacion/consultar.xhtml");
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/evaluacion/consultar.xhtml");
 	}
 
 	public void goEvaluacionDetalle() throws IOException {
@@ -601,15 +677,21 @@ public class EvaluacionBean implements Serializable {
 
 		cursosGeneradosCapacitacion.clear();// necesario por ahora
 
-		FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/sistema-capacitaciones-tumi/app/evaluacion/detalle.xhtml");
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/evaluacion/detalle.xhtml");
 	}
 
 	public void filtrarResueltoPorFechas() throws IOException {
 		evaluacionesRegistradas = evaluacionDAO.obtenerPorFechas(
 				fechaResueltoDesde, fechaResueltoHasta);
-		FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/sistema-capacitaciones-tumi/app/evaluacion/consultar.xhtml");
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/evaluacion/consultar.xhtml");
 	}
 
 	public void gogenerarcapacitacion() throws IOException {
@@ -626,8 +708,11 @@ public class EvaluacionBean implements Serializable {
 			getCursosEvaluacion(cursosTemario, false);
 		}
 
-		FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/sistema-capacitaciones-tumi/app/generarCapacitacion.xhtml");
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/generarCapacitacion.xhtml");
 	}
 
 	private void getCursosEvaluacion(List<CursoView> cursos,
@@ -825,8 +910,11 @@ public class EvaluacionBean implements Serializable {
 
 		getCursosCapacitacion(cursosGeneradosCapacitacion);
 		// return "/app/generarCapacitacion?faces-redirect=true";
-		FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/sistema-capacitaciones-tumi/app/generarCapacitacion.xhtml");
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/generarCapacitacion.xhtml");
 
 	}
 
@@ -846,10 +934,10 @@ public class EvaluacionBean implements Serializable {
 				.get(getPreguntaIndex() - 1);
 
 		if (codigoRespuesta != null) {
-			Respuesta respuesta = respuestaDAO.find(Integer
-					.valueOf(codigoRespuesta));
 
-			if (respuesta.getVerdadero() == 1) {
+			boolean esVerdadero = esRespuestaValida(codigoRespuesta);
+
+			if (esVerdadero) {
 				pregunta.setPuntajeObtenido(pregunta.getCodigoPregunta()
 						.getValor());
 			} else {
@@ -861,43 +949,23 @@ public class EvaluacionBean implements Serializable {
 
 	}
 
+	private boolean esRespuestaValida(String codigoRespuesta) {
+		boolean esVerdadero = false;
+		Respuesta respuesta = respuestaDAO.find(Integer
+				.valueOf(codigoRespuesta));
+
+		if (respuesta.getVerdadero() == 1) {
+			esVerdadero = true;
+		}
+		return esVerdadero;
+	}
+
 	private void valorarPregunta(List<String> codigoRespuestas) {
 		Cursoevaluacionpregunta pregunta = preguntasEvaluacion
 				.get(getPreguntaIndex() - 1);
 
 		if (codigoRespuestas != null && codigoRespuestas.size() > 0) {
-			boolean exito = true;
-
-			filter.clear();
-			filter.put("codigoPregunta.codigo", pregunta.getCodigo());
-			filter.put("verdadero", new Short("1"));
-			List<Respuesta> respuestas = respuestaDAO.findByProperty(filter);
-
-			if (Integer.valueOf(respuestas.size()).compareTo(
-					Integer.valueOf(codigoRespuestas.size())) != 0) {
-				exito = false;
-			} else {
-				for (Respuesta respuesta : respuestas) {
-
-					boolean found = false;
-
-					for (String codigoRespuesta : codigoRespuestas) {
-
-						if (Integer.valueOf(codigoRespuesta).compareTo(
-								respuesta.getCodigo()) == 0) {
-							found = true;
-							break;
-						}
-
-					}
-
-					if (!found) {
-						exito = false;
-						break;
-					}
-
-				}
-			}
+			boolean exito = esRespuestaValida(codigoRespuestas, pregunta);
 
 			if (exito) {
 				pregunta.setPuntajeObtenido(pregunta.getCodigoPregunta()
@@ -909,6 +977,43 @@ public class EvaluacionBean implements Serializable {
 			pregunta.setPuntajeObtenido(0.0);
 		}
 
+	}
+
+	private boolean esRespuestaValida(List<String> codigoRespuestas,
+			Cursoevaluacionpregunta pregunta) {
+		boolean exito = true;
+
+		filter.clear();
+		filter.put("codigoPregunta.codigo", pregunta.getCodigo());
+		filter.put("verdadero", new Short("1"));
+		List<Respuesta> respuestas = respuestaDAO.findByProperty(filter);
+
+		if (Integer.valueOf(respuestas.size()).compareTo(
+				Integer.valueOf(codigoRespuestas.size())) != 0) {
+			exito = false;
+		} else {
+			for (Respuesta respuesta : respuestas) {
+
+				boolean found = false;
+
+				for (String codigoRespuesta : codigoRespuestas) {
+
+					if (Integer.valueOf(codigoRespuesta).compareTo(
+							respuesta.getCodigo()) == 0) {
+						found = true;
+						break;
+					}
+
+				}
+
+				if (!found) {
+					exito = false;
+					break;
+				}
+
+			}
+		}
+		return exito;
 	}
 
 	private void crearRespuesta(String codigoRespuesta) {
@@ -924,6 +1029,59 @@ public class EvaluacionBean implements Serializable {
 			cursoevaluacionpreguntarespuesta.setUsuarioRegistro("1");
 			cursoevaluacionpreguntarespuestas
 					.add(cursoevaluacionpreguntarespuesta);
+		}
+
+	}
+
+	public void actualizarPatronDesarrollo() {
+		if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
+			Patrondesarrollo patron;
+			// numero de intentos
+			if (preguntasEvaluacion.get(getPreguntaIndex()-1)
+					.getPatrondesarrolloList().isEmpty()) {
+				patron = new Patrondesarrollo();
+				patron.setCodigoCursoEvaluacionPregunta(preguntasEvaluacion
+						.get(getPreguntaIndex()-1));
+				patron.setFechaRegistro(new Date());
+				patron.setUsuarioRegistro("admin");
+				patron.setNumeroIntentos(1);// primer intento
+				patron.setOrdenResuelto(resueltoIndice);
+				resueltoIndice++;
+				preguntasEvaluacion.get(getPreguntaIndex()-1)
+						.getPatrondesarrolloList().add(patron);
+			} else {
+				patron = preguntasEvaluacion.get(getPreguntaIndex()-1)
+						.getPatrondesarrolloList().get(0);
+				patron.setNumeroIntentos(patron.getNumeroIntentos()+1);//sumando intento
+			}
+
+			// intento valido
+			if (pregunta.getCodigoTipoPregunta().getCodigo() == 1) {
+				boolean exito = esRespuestaValida(selectedItem);
+
+				if (exito) {
+					patron.setResultadoIntento(patron.getNumeroIntentos());
+				} else {
+					patron.setResultadoIntento(null);
+				}
+
+			} else if (pregunta.getCodigoTipoPregunta().getCodigo() == 2) {
+				valorarPregunta(selectedItems);
+				for (String selectedItem : selectedItems) {
+					crearRespuesta(selectedItem);
+				}
+
+				boolean exito = esRespuestaValida(selectedItems,
+						preguntasEvaluacion.get(getPreguntaIndex()-1));
+
+				if (exito) {
+					patron.setResultadoIntento(patron.getNumeroIntentos());
+				} else {
+					patron.setResultadoIntento(null);
+				}
+
+			}
+
 		}
 
 	}
@@ -1114,6 +1272,22 @@ public class EvaluacionBean implements Serializable {
 	public void setPersonalCapacitacionSelected(
 			PersonalCapacitacion personalCapacitacionSelected) {
 		this.personalCapacitacionSelected = personalCapacitacionSelected;
+	}
+
+	public Integer getInicioPregunta() {
+		return inicioPregunta;
+	}
+
+	public void setInicioPregunta(Integer inicioPregunta) {
+		this.inicioPregunta = inicioPregunta;
+	}
+
+	public int getResueltoIndice() {
+		return resueltoIndice;
+	}
+
+	public void setResueltoIndice(int resueltoIndice) {
+		this.resueltoIndice = resueltoIndice;
 	}
 
 }

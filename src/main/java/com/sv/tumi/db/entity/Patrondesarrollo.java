@@ -38,11 +38,11 @@ public class Patrondesarrollo implements Serializable {
     @Column(name = "codigo")
     private Integer codigo;
     @Column(name = "ordenResuelto")
-    private String ordenResuelto;
+    private Integer ordenResuelto;
     @Column(name = "resultadoIntento")
-    private String resultadoIntento;
+    private Integer resultadoIntento;
     @Column(name = "numeroIntentos")
-    private String numeroIntentos;
+    private Integer numeroIntentos;
     @Column(name = "fechaRegistro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
@@ -72,27 +72,27 @@ public class Patrondesarrollo implements Serializable {
         this.codigo = codigo;
     }
 
-    public String getOrdenResuelto() {
+    public Integer getOrdenResuelto() {
         return ordenResuelto;
     }
 
-    public void setOrdenResuelto(String ordenResuelto) {
+    public void setOrdenResuelto(Integer ordenResuelto) {
         this.ordenResuelto = ordenResuelto;
     }
 
-    public String getResultadoIntento() {
+    public Integer getResultadoIntento() {
         return resultadoIntento;
     }
 
-    public void setResultadoIntento(String resultadoIntento) {
+    public void setResultadoIntento(Integer resultadoIntento) {
         this.resultadoIntento = resultadoIntento;
     }
 
-    public String getNumeroIntentos() {
+    public Integer getNumeroIntentos() {
         return numeroIntentos;
     }
 
-    public void setNumeroIntentos(String numeroIntentos) {
+    public void setNumeroIntentos(Integer numeroIntentos) {
         this.numeroIntentos = numeroIntentos;
     }
 

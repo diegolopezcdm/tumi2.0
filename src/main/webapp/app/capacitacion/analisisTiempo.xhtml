@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<p:panel header="Detalle de Tiempo de Desarrollo"
+			style="margin-top:20px">
+					    
+		    <p:fieldset legend="Tiempo por Preguntas" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		            <h:form>
+		        	<p:dataTable var="preguntaView" value="#{capacitacionBean.preguntas}" widgetVar="preguntasTable" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+ 
+						<p:column filterBy="#{preguntaView.curso}" headerText="Curso" footerText="contains" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.curso}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.tema}" headerText="Tema" footerText="contains" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.tema}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.subtema}" headerText="Subtema" footerText="contains" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.subtema}" />
+				        </p:column>
+				        
+ 						<p:column filterBy="#{preguntaView.pregunta}" headerText="Pregunta" footerText="contains" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.pregunta}" />
+				        </p:column>
+				        
+				        <p:column filterBy="#{preguntaView.minutos}" headerText="Tiempo" footerText="contains" filterMatchMode="contains">
+				            <h:outputText value="#{preguntaView.minutos}" />
+				        </p:column>
+ 					</p:dataTable>
+		            </h:form>
+		        </h:panelGrid>
+    		</p:fieldset>
+    		
+    		<p:fieldset legend="Tiempo por Cursos" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		            <p:chart type="pie" model="#{capacitacionBean.distribucionDeCursos}" style="width:800px;height:600px">
+            			
+       	 			</p:chart>
+		        </h:panelGrid>
+    		</p:fieldset>
+    		
+    		<p:fieldset legend="Tiempos Esperados" toggleable="true" toggleSpeed="500" collapsed="true">
+		        <h:panelGrid columns="1" cellpadding="5">
+		        	<ui:repeat value="#{capacitacionBean.rangosTiempos}" var="pregunta"> 
+		        		<h:panelGrid columns="2" cellpadding="5">
+		        			
+		        			<p:outputLabel for="curso" value="Curso: " />
+			            	<p:outputLabel id="curso" value="#{pregunta.curso}"/>
+			            
+			            	<p:outputLabel for="tema" value="Tema: " />
+			            	<p:outputLabel id="tema" value="#{pregunta.tema}"/>
+			            	
+			            	<p:outputLabel for="subtema" value="Subtema: " />
+			           		<p:outputLabel id="subtema" value="#{pregunta.subtema}"/>
+			           		
+			           		<p:outputLabel for="pregunta" value="Pregunta: " />
+			           		<p:outputLabel id="pregunta" value="#{pregunta.pregunta}"/>
+			            
+		        		</h:panelGrid>
+		        		<h:panelGrid columns="1" cellpadding="5">
+		        			<p:chart type="metergauge" model="#{pregunta.rangos}" style="width:400px;height:250px" />
+		        			
+		        		</h:panelGrid>
+		        		
+		        		<p:separator />
+		        		
+		        	</ui:repeat>
+		        </h:panelGrid>
+    		</p:fieldset>
+
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>
