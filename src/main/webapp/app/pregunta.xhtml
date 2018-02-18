@@ -4,101 +4,133 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:pe="http://primefaces.org/ui">
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
 	<ui:define name="content">
+
 		<h:outputStylesheet library="css" name="main.css" />
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
 			target="head" />
 
-	<p:panel style="border:none"  >
-	
-				<h:form>
-				    <h:outputText id="txt_count" value="La evaluacion finalizara en #{evaluacionBean.numberFormat}" />
-				    <p:poll interval="1" listener="#{evaluacionBean.increment}" update="txt_count" />
-				</h:form>
+		<p:panel style="border:none">
 
-			<p:panel header="Pregunta: #{evaluacionBean.pregunta.texto}" style="margin-top:20px">
-				
-				
-					
-				<p:growl id="growl" showDetail="true" sticky="true" /> 
-				
+			<h:form>
+				<h:outputText id="txt_count"
+					value="La evaluacion finalizara en #{evaluacionBean.numberFormat}" />
+				<p:poll interval="1" listener="#{evaluacionBean.increment}"
+					update="txt_count" />
+			</h:form>
+
+			<p:panel header="Pregunta: #{evaluacionBean.pregunta.texto}"
+				style="margin-top:20px">
+
+
+
+				<p:growl id="growl" showDetail="true" sticky="true" />
+
 				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==1}">
-                	<h:form id="formEvaluacion1">
+					<h:form id="formEvaluacion1">
 
-						<p:panel style="border:none"  >
-								 
-							<p:selectOneRadio id="alternativaUnica" layout="responsive" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
+						<p:panel style="border:none">
+
+							<p:selectOneRadio id="alternativaUnica" layout="responsive"
+								columns="1" required="True"
+								requiredMessage="selecione respuesta"
+								styleClass="text-label-left"
+								value="#{evaluacionBean.selectedItem}">
 								<p:ajax listener="#{evaluacionBean.actualizarPatronDesarrollo}" />
-								<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
-									<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
+								<c:forEach var="respuesta"
+									items="#{evaluacionBean.pregunta.respuestaList}">
+									<f:selectItem itemLabel="#{respuesta.texto}"
+										itemValue="#{respuesta.codigo}" />
 								</c:forEach>
 							</p:selectOneRadio>
-							
-							<p:commandButton value="Omitir" actionListener="#{evaluacionBean.goPreguntas}" icon="fa icon-cancel-circled Fs14 white">
-       							<p:confirm header="Confirmar" message="Esta seguro de omitir pregunta?" icon="ui-icon-alert" />
-   							</p:commandButton>
-							<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-					    		<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-					    		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+
+							<p:commandButton value="Omitir"
+								actionListener="#{evaluacionBean.goPreguntas}"
+								icon="fa icon-cancel-circled Fs14 white">
+								<p:confirm header="Confirmar"
+									message="Esta seguro de omitir pregunta?" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Si" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									actionListener="#{evaluacionBean.goPreguntas}" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 							</p:confirmDialog>
-															
+
 							<c:if test="#{evaluacionBean.showfinalizar}">
 								<p:commandButton id="btnFinalizar" value="Finalizar"
 									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
-							</c:if>
-							
-							<c:if test="#{!evaluacionBean.showfinalizar}">		
-								<p:commandButton id="btnSiguiente" value="Siguiente"
-									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}" update="growl"/>
+									actionListener="#{evaluacionBean.finalizarEvaluacion}" />
 							</c:if>
 
-						</p:panel>
-					</h:form>
-            	</c:if>
-
-				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==2}">
-					<h:form id="formEvaluacion2">
-						<p:panel style="border:none"  >
-								 
-							<p:selectManyCheckbox id="alternativaVarias" layout="responsive" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItems}">									
-								<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
-									<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
-								</c:forEach>
-							</p:selectManyCheckbox>
-							
-							<p:commandButton value="Omitir" actionListener="#{evaluacionBean.goPreguntas}" icon="fa icon-cancel-circled Fs14 white">
-       							<p:confirm header="Confirmar" message="Esta seguro de omitir pregunta?" icon="ui-icon-alert" />
-   							</p:commandButton>
-							<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-					    		<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-					    		<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-							</p:confirmDialog>
-															
-							<c:if test="#{evaluacionBean.showfinalizar}">								
-								<p:commandButton id="btnFinalizar" value="Finalizar"
-									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.finalizarEvaluacion}" update="growl"/>
-							</c:if>
 							<c:if test="#{!evaluacionBean.showfinalizar}">
 								<p:commandButton id="btnSiguiente" value="Siguiente"
 									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}" update="growl"/>
+									actionListener="#{evaluacionBean.goPreguntas}" update="growl" />
 							</c:if>
 
 						</p:panel>
 					</h:form>
 				</c:if>
-				
-	         		
-	         	
-	         	
-			</p:panel>
-			
-		</p:panel>
 
+				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==2}">
+					<h:form id="formEvaluacion2">
+						<p:panel style="border:none">
+
+							<p:selectManyCheckbox id="alternativaVarias" layout="responsive"
+								columns="1" required="True"
+								requiredMessage="selecione respuesta"
+								styleClass="text-label-left"
+								value="#{evaluacionBean.selectedItems}">
+								<c:forEach var="respuesta"
+									items="#{evaluacionBean.pregunta.respuestaList}">
+									<f:selectItem itemLabel="#{respuesta.texto}"
+										itemValue="#{respuesta.codigo}" />
+								</c:forEach>
+							</p:selectManyCheckbox>
+
+							<p:commandButton value="Omitir"
+								actionListener="#{evaluacionBean.goPreguntas}"
+								icon="fa icon-cancel-circled Fs14 white">
+								<p:confirm header="Confirmar"
+									message="Esta seguro de omitir pregunta?" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Si" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									actionListener="#{evaluacionBean.goPreguntas}" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+
+							<c:if test="#{evaluacionBean.showfinalizar}">
+								<p:commandButton id="btnFinalizar" value="Finalizar"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.finalizarEvaluacion}"
+									update="growl" />
+							</c:if>
+							<c:if test="#{!evaluacionBean.showfinalizar}">
+								<p:commandButton id="btnSiguiente" value="Siguiente"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}" update="growl" />
+							</c:if>
+
+						</p:panel>
+					</h:form>
+				</c:if>
+
+
+
+
+			</p:panel>
+
+		</p:panel>
 	</ui:define>
 
 </ui:composition>

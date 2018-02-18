@@ -15,7 +15,7 @@
 
 				<c:choose>
 					<c:when
-						test="${personalLogeado.tipoPerfil.equals('personalacapacitar')}">
+						test="${personalLogeado.personal.perfil.equals('personalacapacitar')}">
 						<p:menuitem value="Resolver Examen Inicial" icon="fa-paper-plane"
 							action="#{evaluacionBean.goExamenesRegistrados}" />
 						<p:menuitem value="Generar Capacitación" icon="fa-paper-plane"
@@ -29,15 +29,18 @@
 						<p:menuitem value="Evaluación de Capacitación"
 							icon="fa-paper-plane"
 							action="#{evaluacionBean.goEvaluacionesRegistrados}" />
+						<p:menuitem value="Resolver Encuesta"
+							icon="fa-paper-plane"
+							action="#{evaluacionBean.goEncuestasRegistrados}" />
 					</c:when>
-					<c:when test="${personalLogeado.tipoPerfil.equals('jeferrhh')}">
+					<c:when test="${personalLogeado.personal.perfil.equals('jeferrhh')}">
 						<p:menuitem value="Generar Evaluación Inicial"
-							icon="fa-paper-plane" />
+							action="#{solicitudCapacitacionBean.goConsultarSolicitudRegistrados}" icon="fa-paper-plane" />
 					</c:when>
 					<c:when
-						test="${personalLogeado.tipoPerfil.equals('analistadecapacitacion')}">
+						test="${personalLogeado.personal.perfil.equals('analistadecapacitacion')}">
 						<p:menuitem value="Actualizar Solicitud de Capacitación"
-							icon="fa-paper-plane" />
+							action="#{solicitudCapacitacionBean.goActualizarSolicitud}" icon="fa-paper-plane" />
 						<p:menuitem value="Analizar Tiempo de Solución de Evaluación"
 							icon="fa-paper-plane"
 							action="#{capacitacionBean.goAnalizarTiempo}" />

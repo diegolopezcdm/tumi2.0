@@ -1,31 +1,93 @@
 package com.sv.tumi.util;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+
+import com.sv.tumi.db.dao.PersonalDAO;
+import com.sv.tumi.db.entity.Personal;
 
 @ManagedBean(name = "personalLogeado")
 @SessionScoped
 public class PersonalLogeado {
-	
-	private static Integer codigoPersonal = 1;
-	private String tipoPerfil = "analistadecapacitacion";//analistadecapacitacion jeferrhh personalacapacitar
-	
-	public static Integer getCodigoPersonal() {
-		return codigoPersonal;
-	}
-	
-	public static void setCodigoPersonal(Integer codigoPersonal1) {
-		codigoPersonal = codigoPersonal1;
+
+	private String usuario;
+	private String pwd;
+	private static Personal personal;
+	Map<String, Object> filter = new HashMap<String, Object>();
+	private PersonalDAO personalDAO = new PersonalDAO();
+
+	// analistadecapacitacion
+	// jeferrhh
+	// personalacapacitar
+
+	public void login() throws IOException {
+		filter.clear();
+		filter.put("usuario", usuario);
+		filter.put("contraseña", pwd);
+		List<Personal> personalList = personalDAO.findByProperty(filter);
+
+		if (personalList.size() == 1) {
+			personal = personalList.get(0);
+			FacesContext.getCurrentInstance().getExternalContext()
+					.redirect("/sistema-capacitaciones-tumi/app/index.xhtml");
+		} else {
+			FacesContext context = FacesContext.getCurrentInstance();
+			context.getExternalContext().getFlash().setKeepMessages(true);
+			context.addMessage(null, new FacesMessage(
+					FacesMessage.SEVERITY_ERROR,
+					"usuario o contraseña incorrecta", null));
+			return;
+		}
+
 	}
 
-	public String getTipoPerfil() {
-		return tipoPerfil;
+	public void logout() throws IOException {
+		personal = null;
+		FacesContext.getCurrentInstance().getExternalContext()
+				.redirect("/sistema-capacitaciones-tumi/app/login.xhtml");
+	}
+	
+	public static Integer getCodigoPersonal(){
+		return personal.getCodigo();
 	}
 
-	public void setTipoPerfil(String tipoPerfil) {
-		this.tipoPerfil = tipoPerfil;
+	public String getUsuario() {
+		return usuario;
 	}
-	
-	
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	public Personal getPersonal() {
+		return personal;
+	}
+
+	public void setPersonal(Personal personal) {
+		this.personal = personal;
+	}
+
+	public Map<String, Object> getFilter() {
+		return filter;
+	}
+
+	public void setFilter(Map<String, Object> filter) {
+		this.filter = filter;
+	}
 
 }

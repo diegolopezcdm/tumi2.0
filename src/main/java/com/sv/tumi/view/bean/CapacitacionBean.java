@@ -48,6 +48,7 @@ import com.sv.tumi.db.entity.Respuesta;
 import com.sv.tumi.db.entity.Subtema;
 import com.sv.tumi.db.entity.Tema;
 import com.sv.tumi.db.entity.Tiempodesarrollo;
+import com.sv.tumi.util.PersonalLogeado;
 import com.sv.tumi.view.CursoTreeView;
 import com.sv.tumi.view.CursoView;
 import com.sv.tumi.view.DistribucionTiempoView;
@@ -138,6 +139,7 @@ public class CapacitacionBean implements Serializable {
 
 		filter.clear();
 		filter.put("codigoEstado.codigo", 5);// capacitacion generado
+		filter.put("codigoPersonal.codigo", PersonalLogeado.getCodigoPersonal());
 		personalCapacitaciones = personalCapacitacionDAO.findByProperty(filter);
 
 		FacesContext

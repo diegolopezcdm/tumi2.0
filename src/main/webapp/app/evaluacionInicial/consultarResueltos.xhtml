@@ -30,6 +30,18 @@
 								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
 								   	 </h:outputText>
 							    </p:column>
+							    
+							    <p:column headerText="Fecha Inicio">
+						      		<h:outputText value="#{evaluacion.fechaInicio}" >
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </h:outputText>
+							    </p:column>
+							    
+							    <p:column headerText="Fecha Fin">
+						      		<h:outputText value="#{evaluacion.fechaFin}" >
+								   	 	<f:convertDateTime pattern="yyyy-MM-dd"/> 
+								   	 </h:outputText>
+							    </p:column>
 											    
 							    <p:column headerText="Alcance">
 							    	<h:outputText value="#{evaluacion.codigoPersonalCapacitacion.codigoSolicitudCapacitacion.alcance}" />

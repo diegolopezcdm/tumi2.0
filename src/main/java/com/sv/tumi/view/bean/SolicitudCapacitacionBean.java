@@ -179,6 +179,41 @@ public class SolicitudCapacitacionBean implements Serializable{
 		.redirect("/sistema-capacitaciones-tumi/app/solicitudCapacitacion/registrar.xhtml");
 	}
 	
+	public void goConsultarSolicitudRegistrados() throws IOException{
+		codigo=null;
+		fechaInicio=null;
+		fechaFin=null;
+		fechaRegistro=null;
+		buscarRegistrados();
+	}
+	
+	public void goActualizarSolicitud() throws IOException {
+		FacesContext.getCurrentInstance().getExternalContext()
+		.redirect("/sistema-capacitaciones-tumi/app/solicitudCapacitacion/consultar.xhtml");
+	}
+	
+	public void clearRegistrados() throws IOException{
+		codigo=null;
+		fechaInicio=null;
+		fechaFin=null;
+		fechaRegistro=null;
+		estado=null;
+		
+		FacesContext.getCurrentInstance().getExternalContext()
+		.redirect("/sistema-capacitaciones-tumi/app/solicitudCapacitacion/consultarRegistrados.xhtml");
+	}
+	
+	public void clear() throws IOException{
+		codigo=null;
+		fechaInicio=null;
+		fechaFin=null;
+		fechaRegistro=null;
+		estado=null;
+		
+		FacesContext.getCurrentInstance().getExternalContext()
+		.redirect("/sistema-capacitaciones-tumi/app/solicitudCapacitacion/consultar.xhtml");
+	}
+	
 	public void buscar() throws IOException{
 		filter.clear();
 		
@@ -776,7 +811,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 		
 		Estado estadoRegistrado = estadoDAO.find(3);
 		
-		solicitudcapacitacion.setUsuarioRegistro("admmin");
+		solicitudcapacitacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 		solicitudcapacitacion.setCodigoEstado(estadoRegistrado);
 		solicitudCapacitacionDAO.create(solicitudcapacitacion);
 		
@@ -793,7 +828,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 			Date todayWithZeroTime = formatter.parse(formatter.format(today));
 			
 			personalCapacitacion.setFechaRegistro(todayWithZeroTime);
-			personalCapacitacion.setUsuarioRegistro("admin");
+			personalCapacitacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 			personalCapacitacionDAO.create(personalCapacitacion);
 		}
 		
@@ -826,8 +861,8 @@ public class SolicitudCapacitacionBean implements Serializable{
 		
 		if(evaluacionFin.isAfter(dateWith50Percent)){
 			FacesContext context = FacesContext.getCurrentInstance();	        
-	        context.addMessage(null, new FacesMessage("Error: Fecha de Fin de Evaluación no puede ser"
-	        		+ "mayor al rango de 50% de dias entre fecha inicio y fin de Solicitud de Capacitación") );
+	        context.addMessage(null, new FacesMessage("Error: Fecha de Fin de Evaluación debe estar"
+	        		+ "entre las fechas "+ solicitudInicio + " y "+ dateWith50Percent) );
 	        return;
 		}
 		
@@ -841,7 +876,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 		for (PersonalCapacitacion personalCapacitacion : solicitudcapacitacion.getPersonalCapacitacion()) {
 			
 			personalCapacitacion.setCodigoEstado(capacitacionRegistrado);
-			personalCapacitacion.setUsuarioModificacion("admin");
+			personalCapacitacion.setUsuarioModificacion(PersonalLogeado.getCodigoPersonal().toString());
 			personalCapacitacion.setFechaModificacion(new Date());
 			personalCapacitacionDAO.edit(personalCapacitacion);
 			
@@ -857,7 +892,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 			newEvaluacion.setNumeroPregunta(numeroPreguntas);
 			
 			newEvaluacion.setFechaRegistro(todayWithZeroTime);
-			newEvaluacion.setUsuarioRegistro("admin");
+			newEvaluacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 			
 			List<Cursoevaluacion> cursosEvaluacion = new ArrayList<Cursoevaluacion>();
 			
@@ -877,7 +912,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 						cursoEvaluacion.setCodigoEvaluacion(newEvaluacion);
 
 						cursoEvaluacion.setFechaRegistro(todayWithZeroTime);
-						cursoEvaluacion.setUsuarioRegistro("admin");
+						cursoEvaluacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 						cursosEvaluacion.add(cursoEvaluacion);
 						//cursoEvaluacionDAO.create(cursoEvaluacion);
 						filter.clear();
@@ -900,7 +935,7 @@ public class SolicitudCapacitacionBean implements Serializable{
 							pregunta.setCodigoCursoEvaluacion(cursoEvaluacion);
 							pregunta.setCodigoPregunta(preguntaSelected);
 							pregunta.setFechaRegistro(todayWithZeroTime);
-							pregunta.setUsuarioRegistro("admin");
+							pregunta.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 							evaluacionPregunta.add(pregunta);
 							preguntasSeleccionadas.add(preguntaSelected);
 						}

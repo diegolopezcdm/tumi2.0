@@ -4,7 +4,7 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-	
+
 <h:head>
 	<f:facet name="first">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,7 +17,7 @@
 	<h:outputScript name="js/layout.js" library="sentinel-layout" />
 	<ui:insert name="head" />
 
-<style type="text/css">
+	<style type="text/css">
 .datalist-noborder .ui-widget-content {
 	border: none;
 	background: transparent;
@@ -44,32 +44,39 @@
 	color: lightblue;
 	font-size: 40px
 }
-
-
 </style>
 </h:head>
 
 <h:body>
-	<p:growl id="msg" life="5000"  autoUpdate="true"/>
-	
-	<p:panel  style=" background-color: #009ACD;border:none" >
-		<ui:include src="topbar.xhtml" />
+	<p:growl id="msg" life="5000" autoUpdate="true" />
+
+	<p:panel style=" background-color: #009ACD;border:none">
+		<ui:include src="/template/topbarlogin.xhtml" />
 	</p:panel>
-	
-	<p:panelGrid columns="2" layout="grid"  columnClasses="ui-grid-col-2,ui-grid-col-10" >
-		<ui:include src="leftmenu.xhtml" />
-			
-		<ui:insert name="content">
-               	Template
-        </ui:insert>
+
+	<p:panelGrid columns="1" layout="grid">
+
+		<h:form id="formEvaluacion">
+			<p:panelGrid columns="2" layout="grid"
+				columnClasses="ui-grid-col-2,ui-grid-col-10">
+				<p:outputLabel for="usuario" value="Usuario: " />
+				<p:inputText id="usuario" value="#{personalLogeado.usuario}"
+					required="true" />
+
+				<p:outputLabel for="pwd" value="Contraseña: " />
+				<p:password id="pwd" value="#{personalLogeado.pwd}" required="true" />
+
+			</p:panelGrid>
+			<p:commandButton value="Entrar"
+				actionListener="#{personalLogeado.login}" icon="ui-icon-check"
+				update="msg" />
+		</h:form>
+
+		<p:panel style="border:none">
+			<ui:include src="/template/footer.xhtml" />
+		</p:panel>
 
 	</p:panelGrid>
-	
-	<p:panel  style="border:none">
-		<ui:include src="footer.xhtml" />
-	</p:panel>
-	
-
 
 	<p:ajaxStatus
 		style="width:32px; height:32px; position:fixed; right:12px; bottom:10px">
@@ -82,12 +89,6 @@
 		</f:facet>
 	</p:ajaxStatus>
 
-	<h:outputStylesheet name="css/font-icon-layout.css"
-		library="sentinel-layout" />
-	<h:outputStylesheet name="css/sentinel-layout.css"
-		library="sentinel-layout" />
-	<h:outputStylesheet name="css/core-layout.css"
-		library="sentinel-layout" />
 </h:body>
 
 </html>

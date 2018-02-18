@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui"
+	xmlns:my="http://java.sun.com/jsf/composite/my"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+
+
+		<p:panel header="Resolver Encuesta" style="margin-top:20px">
+
+			<p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10"
+				layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel for="nombre" value="Nombre de curso: " />
+				<p:outputLabel id="nombre" disabled="true"
+					value="#{evaluacionBean.selectedEncuesta.codigocurso.nombre}" />
+
+
+				<p:outputLabel for="alcance" value="Alcance de curso: " />
+				<p:outputLabel id="alcance" disabled="true"
+					value="#{evaluacionBean.selectedEncuesta.codigocurso.alcance}" />
+
+			</p:panelGrid>
+			
+			<p:separator />
+			<p:outputLabel id="indicaciones" value="Seleccione del 0 al 10. Donde 0 indica inconformidad y 10 conformidad" />
+
+			<h:form id="formEvaluacion">
+			<p:panel style="margin-top:20px">
+					<ui:repeat value="#{evaluacionBean.respuestasEncuesta}" var="criterio">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-2" layout="grid" styleClass="ui-panelgrid-blank">
+			      
+
+							<p:outputLabel id="criteriolbl" value="#{criterio.codigoCriterioEncuesta.nombre}" />
+							<p:spinner id="criterio" value="#{criterio.valor}" min="0" max="10" size="5" required="true" label="Respuesta de Criterio"/>
+
+						</p:panelGrid>
+
+
+					</ui:repeat>
+				<p:commandButton value="Guardar"  actionListener="#{evaluacionBean.guardarCriterios}" icon="ui-icon-check" update="msg"/>
+				</p:panel>
+			</h:form>
+
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>

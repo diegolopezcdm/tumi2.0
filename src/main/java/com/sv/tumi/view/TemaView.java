@@ -1,11 +1,15 @@
 package com.sv.tumi.view;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-public class TemaView implements Comparable<TemaView>{
+public class TemaView implements Comparable<TemaView>, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String nombre;
 	private String alcance;
 	private int orden;

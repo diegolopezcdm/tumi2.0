@@ -55,6 +55,12 @@ public class Personal implements Serializable {
     private Integer telefono;
     @Column(name = "correo")
     private String correo;
+    @Column(name = "usuario")
+    private String usuario;
+    @Column(name = "contraseña")
+    private String contraseña;
+    @Column(name = "perfil")
+    private String perfil;
     @Column(name = "capacitador")
     private Short capacitador;
     @Column(name = "fechaRegistro")
@@ -233,6 +239,30 @@ public class Personal implements Serializable {
 		return codigoNivelPersonal;
 	}
 	
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public String getContraseña() {
+		return contraseña;
+	}
+
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
+	}
+
+	public String getPerfil() {
+		return perfil;
+	}
+
+	public void setPerfil(String perfil) {
+		this.perfil = perfil;
+	}
+
 	@Override
     public int hashCode() {
         int hash = 0;

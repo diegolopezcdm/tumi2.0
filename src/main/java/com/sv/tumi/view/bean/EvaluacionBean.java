@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -27,31 +28,37 @@ import org.primefaces.model.chart.ChartSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sv.tumi.db.dao.CriterioEncuestaDAO;
 import com.sv.tumi.db.dao.CursoCapacitacionDAO;
 import com.sv.tumi.db.dao.CursoEvaluacionDAO;
 import com.sv.tumi.db.dao.CursoNivelDAO;
 import com.sv.tumi.db.dao.CursoevaluacionPreguntaRespuestaDAO;
 import com.sv.tumi.db.dao.CursoevaluacionpreguntaDAO;
+import com.sv.tumi.db.dao.EncuestaDAO;
 import com.sv.tumi.db.dao.EstadoDAO;
 import com.sv.tumi.db.dao.EvaluacionDAO;
 import com.sv.tumi.db.dao.NivelDAO;
 import com.sv.tumi.db.dao.ParametroGeneracionCapacitacionDAO;
 import com.sv.tumi.db.dao.PatronDesarrolloDAO;
 import com.sv.tumi.db.dao.PersonalCapacitacionDAO;
+import com.sv.tumi.db.dao.PersonalDAO;
 import com.sv.tumi.db.dao.PreguntasDAO;
 import com.sv.tumi.db.dao.RespuestaDAO;
+import com.sv.tumi.db.dao.RespuestaEncuestaDAO;
 import com.sv.tumi.db.dao.ResultadoEvaluacionDAO;
 import com.sv.tumi.db.dao.SolicitudCapacitacionDAO;
 import com.sv.tumi.db.dao.SubtemaDAO;
 import com.sv.tumi.db.dao.TemaDAO;
 import com.sv.tumi.db.dao.TiempoDesarrolloDAO;
 import com.sv.tumi.db.dao.TipoevaluacionDAO;
+import com.sv.tumi.db.entity.CriterioEncuesta;
 import com.sv.tumi.db.entity.Curso;
 import com.sv.tumi.db.entity.Cursocapacitacion;
 import com.sv.tumi.db.entity.Cursoevaluacion;
 import com.sv.tumi.db.entity.Cursoevaluacionpregunta;
 import com.sv.tumi.db.entity.Cursoevaluacionpreguntarespuesta;
 import com.sv.tumi.db.entity.Cursonivel;
+import com.sv.tumi.db.entity.Encuesta;
 import com.sv.tumi.db.entity.Estado;
 import com.sv.tumi.db.entity.Evaluacion;
 import com.sv.tumi.db.entity.Nivel;
@@ -60,6 +67,7 @@ import com.sv.tumi.db.entity.Personal;
 import com.sv.tumi.db.entity.PersonalCapacitacion;
 import com.sv.tumi.db.entity.Pregunta;
 import com.sv.tumi.db.entity.Respuesta;
+import com.sv.tumi.db.entity.RespuestaEncuesta;
 import com.sv.tumi.db.entity.Resultadoevaluacion;
 import com.sv.tumi.db.entity.Subtema;
 import com.sv.tumi.db.entity.Tema;
@@ -67,6 +75,7 @@ import com.sv.tumi.db.entity.Tiempodesarrollo;
 import com.sv.tumi.db.entity.Tipoevaluacion;
 import com.sv.tumi.neuroph.TumiMultiLayerPerceptron;
 import com.sv.tumi.neuroph.util.NormalizacionUtil;
+import com.sv.tumi.util.PersonalLogeado;
 import com.sv.tumi.util.TumiPropertyValues;
 import com.sv.tumi.view.CursoView;
 import com.sv.tumi.view.SubtemaView;
@@ -98,10 +107,14 @@ public class EvaluacionBean implements Serializable {
 	List<Evaluacion> evaluacionesRegistradas = new ArrayList<Evaluacion>();
 	List<Evaluacion> evaluacionesResueltas = new ArrayList<Evaluacion>();
 	Evaluacion selectedEvaluacionRegistrada = new Evaluacion();
+	private String tituloEvaluacionFormulario;
 	Evaluacion selectedEvaluacionResuelta = new Evaluacion();
 	private Date fechaResueltoDesde;
 	private Date fechaResueltoHasta;
 	List<PersonalCapacitacion> personalCapacitaciones;
+	List<Encuesta> encuestasRegistradas;
+	List<RespuestaEncuesta> respuestasEncuesta;
+	Encuesta selectedEncuesta;
 	PersonalCapacitacion personalCapacitacionSelected;
 	private Integer inicioPregunta;
 
@@ -109,6 +122,9 @@ public class EvaluacionBean implements Serializable {
 	private List<String> selectedItems = new ArrayList();
 
 	PatronDesarrolloDAO patronDesarrolloDAO = new PatronDesarrolloDAO();
+	EncuestaDAO encuestaDAO = new EncuestaDAO();
+	CriterioEncuestaDAO criterioencuestaDAO = new CriterioEncuestaDAO();
+	RespuestaEncuestaDAO respuestaEncuestaDAO = new RespuestaEncuestaDAO();
 	TiempoDesarrolloDAO tiempoDesarrolloDAO = new TiempoDesarrolloDAO();
 	CursoevaluacionpreguntaDAO cursoevaluacionpreguntaDAO = new CursoevaluacionpreguntaDAO();
 	CursoEvaluacionDAO cursoEvaluacionDAO = new CursoEvaluacionDAO();
@@ -116,6 +132,7 @@ public class EvaluacionBean implements Serializable {
 	RespuestaDAO respuestaDAO = new RespuestaDAO();
 	ResultadoEvaluacionDAO resultadoEvaluacionDAO = new ResultadoEvaluacionDAO();
 	CursoevaluacionPreguntaRespuestaDAO cursoevaluacionPreguntaRespuestaDAO = new CursoevaluacionPreguntaRespuestaDAO();
+	PersonalDAO personalDAO = new PersonalDAO();
 	EstadoDAO estadoDAO = new EstadoDAO();
 	EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
 	PersonalCapacitacionDAO personalCapacitacionDAO = new PersonalCapacitacionDAO();
@@ -234,14 +251,14 @@ public class EvaluacionBean implements Serializable {
 
 		pregunta = preguntasEvaluacion.get(getPreguntaIndex())
 				.getCodigoPregunta();
-		
+
 		if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
 			inicioPregunta = number;
 			preguntasEvaluacion.get(getPreguntaIndex())
 					.setPatrondesarrolloList(new ArrayList<Patrondesarrollo>());
 
 		}
-		
+
 		setPreguntaIndex(getPreguntaIndex() + 1);
 
 		filter.clear();
@@ -286,7 +303,7 @@ public class EvaluacionBean implements Serializable {
 				tiempoDesarrollo
 						.setCodigoCursoEvaluacionPregunta(preguntasEvaluacion
 								.get(getPreguntaIndex() - 1));
-				tiempoDesarrollo.setUsuarioRegistro("admin");
+				tiempoDesarrollo.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 
 				try {
 					Date todayWithZeroTime = formatter.parse(formatter
@@ -378,7 +395,7 @@ public class EvaluacionBean implements Serializable {
 			Resultadoevaluacion resultadoevaluacion = new Resultadoevaluacion();
 			resultadoevaluacion.setCodigoCursoEvaluacion(cursoevaluacion);
 			resultadoevaluacion.setFechaRegistro(new Date());
-			resultadoevaluacion.setUsuarioRegistro("1");
+			resultadoevaluacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 			resultadoevaluacion.setPuntaje(porcentajeAprobacion);
 
 			if (porcentajeAprobacion < 70) {
@@ -397,7 +414,7 @@ public class EvaluacionBean implements Serializable {
 		Estado estadoEvaluacion = estadoDAO.find(4);// evaluacion resuelto
 		selectedEvaluacion.setCodigoEstado(estadoEvaluacion);
 		selectedEvaluacion.setFechaModificacion(new Date());
-		selectedEvaluacion.setUsuarioModificacion("1");
+		selectedEvaluacion.setUsuarioModificacion(PersonalLogeado.getCodigoPersonal().toString());
 		evaluacionDAO.edit(selectedEvaluacion);
 
 		if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(1) == 0) {// evaluacion
@@ -411,6 +428,22 @@ public class EvaluacionBean implements Serializable {
 					.redirect("evaluacionFinal.xhtml");
 		} else if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {// evaluacion
 																						// capacitacion
+			Estado registrado = estadoDAO.find(3);
+			Personal personal = personalDAO.find(PersonalLogeado
+					.getCodigoPersonal());
+
+			for (Cursoevaluacion cursoEvaluacion : selectedEvaluacion
+					.getCursoevaluacionList()) {
+				Encuesta encuesta = new Encuesta();
+				encuesta.setCodigoEstado(registrado);
+				encuesta.setCodigocurso(cursoEvaluacion.getCodigoCursoNivel()
+						.getCodigoSubtema().getCodigoTema().getCodigoCurso());
+				encuesta.setCodigoPersonal(personal);
+				encuesta.setFechaRegistro(new Date());
+				encuesta.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
+				encuestaDAO.create(encuesta);
+			}
+
 			Estado terminado = estadoDAO.find(7);// terminado
 			actualizarEstadodePersonalCapacitacion(terminado);
 
@@ -428,7 +461,7 @@ public class EvaluacionBean implements Serializable {
 		PersonalCapacitacion personalCapacitacion = selectedEvaluacion
 				.getCodigoPersonalCapacitacion();
 		personalCapacitacion.setFechaModificacion(new Date());
-		personalCapacitacion.setUsuarioModificacion("1");
+		personalCapacitacion.setUsuarioModificacion(PersonalLogeado.getCodigoPersonal().toString());
 		personalCapacitacion.setCodigoEstado(estadoPersonalCapacitacion);
 		personalCapacitacionDAO.edit(personalCapacitacion);
 	}
@@ -449,6 +482,7 @@ public class EvaluacionBean implements Serializable {
 		filter.clear();
 		filter.put("codigoEstado.codigo", 3);// evaluacion registrada
 		filter.put("codigoTipo.codigo", 1);// evaluacion inicial
+
 		// filter.put("codigoPersonalCapacitacion.codigoEstado.codigo",
 		// 5);//personal capacitacion 'capacitacion generado'
 		// filter.put("codigoPersonalCapacitacion.codigoSolicitudCapacitacion.codigoEstado.codigo",
@@ -462,7 +496,10 @@ public class EvaluacionBean implements Serializable {
 					&& // registrado
 					evaluacion.getCodigoPersonalCapacitacion()
 							.getCodigoSolicitudCapacitacion().getCodigoEstado()
-							.getCodigo().compareTo(1) == 0) {// aprobado
+							.getCodigo().compareTo(1) == 0 // aprobado
+					&& evaluacion.getCodigoPersonalCapacitacion()
+							.getCodigoPersonal().getCodigo()
+							.compareTo(PersonalLogeado.getCodigoPersonal()) == 0) {
 				evaluacionesRegistradas.add(evaluacion);
 			}
 
@@ -475,10 +512,70 @@ public class EvaluacionBean implements Serializable {
 						"/sistema-capacitaciones-tumi/app/evaluacionInicial/consultarRegistrados.xhtml");
 	}
 
+	public void goEncuestasRegistrados() throws IOException {
+
+		encuestasRegistradas = new ArrayList<Encuesta>();
+		filter.clear();
+		filter.put("codigoEstado.codigo", 3);
+		filter.put("codigoPersonal.codigo", PersonalLogeado.getCodigoPersonal());
+		encuestasRegistradas = encuestaDAO.findByProperty(filter);
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/encuesta/consultarRegistrados.xhtml");
+	}
+
+	public void goResolverEncuesta() throws IOException {
+
+		filter.clear();
+		List<CriterioEncuesta> criterios = criterioencuestaDAO
+				.findByProperty(filter);
+
+		respuestasEncuesta = new ArrayList<RespuestaEncuesta>();
+
+		for (CriterioEncuesta criterioEncuesta : criterios) {
+			RespuestaEncuesta respuesta = new RespuestaEncuesta();
+			respuesta.setCodigoEncuesta(selectedEncuesta);
+			respuesta.setCodigoCriterioEncuesta(criterioEncuesta);
+			respuestasEncuesta.add(respuesta);
+		}
+
+		FacesContext
+				.getCurrentInstance()
+				.getExternalContext()
+				.redirect(
+						"/sistema-capacitaciones-tumi/app/encuesta/resolver.xhtml");
+	}
+
+	public void guardarCriterios() throws IOException {
+		for (RespuestaEncuesta respuesta : respuestasEncuesta) {
+
+			if (respuesta.getValor() == null) {
+				FacesContext context = FacesContext.getCurrentInstance();
+				context.getExternalContext().getFlash().setKeepMessages(true);
+				context.addMessage(null, new FacesMessage(
+						FacesMessage.SEVERITY_ERROR,
+						"Resuelva todos los criterios", null));
+				return;
+			}
+
+			respuesta.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
+			respuesta.setFechaRegistro(new Date());
+			respuestaEncuestaDAO.create(respuesta);
+		}
+
+		Estado terminado = estadoDAO.find(7);// terminado
+		selectedEncuesta.setCodigoEstado(terminado);
+		encuestaDAO.edit(selectedEncuesta);
+
+		goEncuestasRegistrados();
+	}
+
 	public void goEvaluacionesRegistrados() throws IOException {
 		personalCapacitaciones = new ArrayList<PersonalCapacitacion>();
 		filter.clear();
-
+		filter.put("codigoPersonal.codigo", PersonalLogeado.getCodigoPersonal());
 		List<PersonalCapacitacion> personalCapacitaciones = personalCapacitacionDAO
 				.findByProperty(filter);
 
@@ -526,7 +623,7 @@ public class EvaluacionBean implements Serializable {
 
 			personalCapacitacionSelected
 					.setCodigoEstado(evaluacionCapacitacionGenerado);
-			personalCapacitacionSelected.setUsuarioModificacion("admin");
+			personalCapacitacionSelected.setUsuarioModificacion(PersonalLogeado.getCodigoPersonal().toString());
 			personalCapacitacionSelected.setFechaModificacion(new Date());
 			personalCapacitacionDAO.edit(personalCapacitacionSelected);
 
@@ -544,7 +641,7 @@ public class EvaluacionBean implements Serializable {
 			Date todayWithZeroTime = formatter.parse(formatter
 					.format(new Date()));
 			newEvaluacion.setFechaRegistro(todayWithZeroTime);
-			newEvaluacion.setUsuarioRegistro("admin");
+			newEvaluacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 
 			filter.clear();
 			filter.put("codigoPersonalCapacitacion.codigo",
@@ -562,7 +659,7 @@ public class EvaluacionBean implements Serializable {
 				cursoEvaluacion.setCodigoEvaluacion(newEvaluacion);
 
 				cursoEvaluacion.setFechaRegistro(todayWithZeroTime);
-				cursoEvaluacion.setUsuarioRegistro("admin");
+				cursoEvaluacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 				cursosEvaluacion.add(cursoEvaluacion);
 
 				filter.clear();
@@ -587,7 +684,7 @@ public class EvaluacionBean implements Serializable {
 					pregunta.setCodigoCursoEvaluacion(cursoEvaluacion);
 					pregunta.setCodigoPregunta(preguntaSelected);
 					pregunta.setFechaRegistro(todayWithZeroTime);
-					pregunta.setUsuarioRegistro("admin");
+					pregunta.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 					evaluacionPregunta.add(pregunta);
 					preguntasSeleccionadas.add(preguntaSelected);
 				}
@@ -624,7 +721,10 @@ public class EvaluacionBean implements Serializable {
 		for (Evaluacion evaluacion : evaluaciones) {
 
 			if (evaluacion.getCodigoPersonalCapacitacion().getCodigoEstado()
-					.getCodigo().compareTo(6) == 0) {
+					.getCodigo().compareTo(6) == 0
+					&& evaluacion.getCodigoPersonalCapacitacion()
+							.getCodigoPersonal().getCodigo()
+							.compareTo(PersonalLogeado.getCodigoPersonal()) == 0) {
 				evaluacionesResueltas.add(evaluacion);
 			}
 
@@ -639,6 +739,13 @@ public class EvaluacionBean implements Serializable {
 
 	public void goIniciarExamen() throws IOException {
 		selectedEvaluacion = selectedEvaluacionRegistrada;
+		
+		if(selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(1)==0){
+			tituloEvaluacionFormulario = "Resolver Examen Inicial";// examen inicial
+		} else {
+			tituloEvaluacionFormulario = "Resolver Evaluación de Capacitación";
+		}
+		
 		cargaEvaluacion();
 		FacesContext.getCurrentInstance().getExternalContext()
 				.redirect("/sistema-capacitaciones-tumi/app/evaluacion.xhtml");
@@ -652,7 +759,18 @@ public class EvaluacionBean implements Serializable {
 	public void goConsultarResueltos() throws IOException {
 		filter.clear();
 		filter.put("codigoEstado.codigo", 4);// evaluacion resuelto
-		evaluacionesRegistradas = evaluacionDAO.findByProperty(filter);
+		List<Evaluacion> evaluaciones = evaluacionDAO.findByProperty(filter);
+		evaluacionesRegistradas = new ArrayList<Evaluacion>();
+
+		for (Evaluacion evaluacion : evaluaciones) {
+
+			if (evaluacion.getCodigoPersonalCapacitacion().getCodigoPersonal()
+					.getCodigo().compareTo(PersonalLogeado.getCodigoPersonal()) == 0) {
+				evaluacionesRegistradas.add(evaluacion);
+			}
+
+		}
+
 		FacesContext
 				.getCurrentInstance()
 				.getExternalContext()
@@ -896,7 +1014,7 @@ public class EvaluacionBean implements Serializable {
 					.setCodigoPersonalCapacitacion(personalCapacitacion);
 			cursocapacitacion.setCodigoCursoNivel(cursonivelSeleccionado);
 			cursocapacitacion.setFechaRegistro(new Date());
-			cursocapacitacion.setUsuarioRegistro("1");
+			cursocapacitacion.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 			cursoCapacitacionDAO.create(cursocapacitacion);
 			cursoCapacitacion.add(cursocapacitacion);
 
@@ -1026,7 +1144,7 @@ public class EvaluacionBean implements Serializable {
 			cursoevaluacionpreguntarespuesta.setCodigoRespuesta(respuestaDAO
 					.find(Integer.valueOf(codigoRespuesta)));
 			cursoevaluacionpreguntarespuesta.setFechaRegistro(new Date());
-			cursoevaluacionpreguntarespuesta.setUsuarioRegistro("1");
+			cursoevaluacionpreguntarespuesta.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 			cursoevaluacionpreguntarespuestas
 					.add(cursoevaluacionpreguntarespuesta);
 		}
@@ -1037,22 +1155,23 @@ public class EvaluacionBean implements Serializable {
 		if (selectedEvaluacion.getCodigoTipo().getCodigo().compareTo(2) == 0) {
 			Patrondesarrollo patron;
 			// numero de intentos
-			if (preguntasEvaluacion.get(getPreguntaIndex()-1)
+			if (preguntasEvaluacion.get(getPreguntaIndex() - 1)
 					.getPatrondesarrolloList().isEmpty()) {
 				patron = new Patrondesarrollo();
 				patron.setCodigoCursoEvaluacionPregunta(preguntasEvaluacion
-						.get(getPreguntaIndex()-1));
+						.get(getPreguntaIndex() - 1));
 				patron.setFechaRegistro(new Date());
-				patron.setUsuarioRegistro("admin");
+				patron.setUsuarioRegistro(PersonalLogeado.getCodigoPersonal().toString());
 				patron.setNumeroIntentos(1);// primer intento
 				patron.setOrdenResuelto(resueltoIndice);
 				resueltoIndice++;
-				preguntasEvaluacion.get(getPreguntaIndex()-1)
+				preguntasEvaluacion.get(getPreguntaIndex() - 1)
 						.getPatrondesarrolloList().add(patron);
 			} else {
-				patron = preguntasEvaluacion.get(getPreguntaIndex()-1)
+				patron = preguntasEvaluacion.get(getPreguntaIndex() - 1)
 						.getPatrondesarrolloList().get(0);
-				patron.setNumeroIntentos(patron.getNumeroIntentos()+1);//sumando intento
+				patron.setNumeroIntentos(patron.getNumeroIntentos() + 1);// sumando
+																			// intento
 			}
 
 			// intento valido
@@ -1072,7 +1191,7 @@ public class EvaluacionBean implements Serializable {
 				}
 
 				boolean exito = esRespuestaValida(selectedItems,
-						preguntasEvaluacion.get(getPreguntaIndex()-1));
+						preguntasEvaluacion.get(getPreguntaIndex() - 1));
 
 				if (exito) {
 					patron.setResultadoIntento(patron.getNumeroIntentos());
@@ -1178,7 +1297,7 @@ public class EvaluacionBean implements Serializable {
 	}
 
 	public void increment() throws IOException {
-		if (number == 0) {
+		if (number == 0 && selectedEvaluacion!=null) {
 			finalizarEvaluacion();
 		}
 		number = number - 1000;
@@ -1288,6 +1407,38 @@ public class EvaluacionBean implements Serializable {
 
 	public void setResueltoIndice(int resueltoIndice) {
 		this.resueltoIndice = resueltoIndice;
+	}
+
+	public List<Encuesta> getEncuestasRegistradas() {
+		return encuestasRegistradas;
+	}
+
+	public void setEncuestasRegistradas(List<Encuesta> encuestasRegistradas) {
+		this.encuestasRegistradas = encuestasRegistradas;
+	}
+
+	public Encuesta getSelectedEncuesta() {
+		return selectedEncuesta;
+	}
+
+	public void setSelectedEncuesta(Encuesta selectedEncuesta) {
+		this.selectedEncuesta = selectedEncuesta;
+	}
+
+	public List<RespuestaEncuesta> getRespuestasEncuesta() {
+		return respuestasEncuesta;
+	}
+
+	public void setRespuestasEncuesta(List<RespuestaEncuesta> respuestasEncuesta) {
+		this.respuestasEncuesta = respuestasEncuesta;
+	}
+
+	public String getTituloEvaluacionFormulario() {
+		return tituloEvaluacionFormulario;
+	}
+
+	public void setTituloEvaluacionFormulario(String tituloEvaluacionFormulario) {
+		this.tituloEvaluacionFormulario = tituloEvaluacionFormulario;
 	}
 
 }
